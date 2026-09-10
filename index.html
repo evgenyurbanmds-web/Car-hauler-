@@ -161,6 +161,43 @@ function showMain(){$('mainView').style.display='block';$('historyView').classLi
 function eventCoords(e){if(Number.isFinite(e.lat)&&Number.isFinite(e.lon))return [e.lat,e.lon];return null}
 function openTrip(i){const t=app.trips[i];if(!t)return;$('historyView').classList.remove('open');$('detailView').classList.add('open');$('detailRoute').textContent='Trip details';$('detailDate').textContent=`${fmtDate(t.startedAt)} → ${fmtDate(t.finishedAt)}`;const m=tripMetrics(t);$('detailSummary').innerHTML=`<div class="summary-item"><span>GPS miles</span><strong>${Number(t.gpsMiles||0).toFixed(1)}</strong></div><div class="summary-item"><span>Odometer miles</span><strong>${odoMiles(t).toFixed(0)}</strong></div><div class="summary-item"><span>Revenue</span><strong>${money(t.revenue)}</strong></div><div class="summary-item"><span>Profit</span><strong class="${m.profit>=0?'good':'bad'}">${money(m.profit)}</strong></div><div class="summary-item"><span>Fuel</span><strong>${money(t.fuelCost)}</strong></div><div class="summary-item"><span>Parking</span><strong>${money(t.parkingCost)}</strong></div><div class="summary-item"><span>MPG</span><strong>${m.mpg?m.mpg.toFixed(2):'—'}</strong></div><div class="summary-item"><span>Revenue / mi</span><strong>${m.mi?money((t.revenue||0)/m.mi):'$0.00'}</strong></div>`;$('detailCars').innerHTML=(t.cars||[]).length?(t.cars||[]).map(c=>`<div class="onboard-row"><div class="caricon">🚗</div><div class="grow"><div class="name">${esc(c.name)}</div><div class="meta">${c.status==='delivered'?'Delivered':'On board'}${c.deliveryLoc?' · '+esc(c.deliveryLoc):''}${c.deliveryMiles!=null?' · '+Number(c.deliveryMiles).toFixed(0)+' mi':''}${c.grossPerMile!=null?' · Gross '+money(c.grossPerMile)+'/mi':''}</div></div><div class="price">${money(c.price)}</div></div>`).join(''):'<div class="empty">Автомобилей нет</div>';$('detailEvents').innerHTML=(t.events||[]).map(e=>eventHtml(e)).join('')||'<div class="empty">Событий нет</div>';window.scrollTo(0,0);setTimeout(()=>drawMap(t),50)}
 function drawMap(t){if(typeof L==='undefined'){$('map').innerHTML='<div class="empty">Карта не загрузилась. Проверьте интернет.</div>';return}if(map){map.remove();map=null}map=L.map('map',{zoomControl:true});L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);const pts=(t.track||[]).filter(p=>Number.isFinite(p.lat)&&Number.isFinite(p.lon)).map(p=>[p.lat,p.lon]);if(pts.length>1){routeLayer=L.polyline(pts,{weight:5}).addTo(map);map.fitBounds(routeLayer.getBounds(),{padding:[20,20]})}else{const ecs=(t.events||[]).map(eventCoords).filter(Boolean);if(ecs.length){map.fitBounds(ecs,{padding:[25,25]})}else map.setView([27.95,-82.46],7)}markerLayer=L.layerGroup().addTo(map);(t.events||[]).forEach(e=>{const c=eventCoords(e);if(c)L.marker(c).addTo(markerLayer).bindPopup(`<b>${esc(e.icon||'')} ${esc(e.title||'')}</b><br>${typeof e.time==='number'?esc(fmtDate(e.time)):esc(e.time||'')}${e.loc?'<br>'+esc(e.loc):''}`)})}
+
+function setupSmartKeyboard(){
+  const flows = [
+    ['pCar','pPrice','pOdo'],
+    ['dOdo'],
+    ['fGal','fCost','fOdo'],
+    ['pkCost','pkNote','pkOdo'],
+    ['sOdo']
+  ];
+
+  flows.forEach(flow=>{
+    flow.forEach((id,i)=>{
+      const el=$(id);
+      if(!el) return;
+
+      const isLast = i === flow.length-1;
+      el.setAttribute('enterkeyhint', isLast ? 'done' : 'next');
+
+      el.addEventListener('keydown', e=>{
+        if(e.key !== 'Enter') return;
+        e.preventDefault();
+
+        if(!isLast){
+          const next=$(flow[i+1]);
+          if(next){
+            next.focus();
+            try{ next.select(); }catch(_){}
+          }
+        }else{
+          el.blur(); // closes the keyboard; does NOT submit the action automatically
+        }
+      });
+    });
+  });
+}
+setupSmartKeyboard();
+
 render();if(st.active)startWatch();
 if('serviceWorker' in navigator){
   navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{});
