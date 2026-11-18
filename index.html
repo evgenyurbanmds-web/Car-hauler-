@@ -57,6 +57,9 @@
     .sheet-overlay.open{display:flex}
     .leaflet-container{z-index:0;isolation:isolate}
     body.locked .leaflet-container{visibility:hidden}
+    .tappable{cursor:pointer}
+    .tappable:active{opacity:.72}
+    .evhint{color:var(--muted);font-size:15px;align-self:center;padding-left:6px}
     .sheet{background:#10161D;border:1px solid var(--border);border-bottom:0;border-radius:22px 22px 0 0;width:100%;max-width:760px;max-height:92vh;overflow-y:auto;padding:16px 16px calc(16px + env(safe-area-inset-bottom));animation:sheetUp .22s ease-out}
     @keyframes sheetUp{from{transform:translateY(46px);opacity:.35}to{transform:none;opacity:1}}
     .sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px}
@@ -362,6 +365,37 @@
         <button class="cancelbtn sheet-cancel">Cancel</button>
         <button class="redbtn" id="finConfirm">Done</button>
       </div>
+    </div>
+
+    <!-- ПРАВКА (машина или событие) -->
+    <div class="sheet-sec" id="sheetEdit">
+      <div class="sub" id="eInfo" style="margin-bottom:6px"></div>
+      <div id="eCarFields">
+        <label class="flabel">Машина (марка / модель)</label>
+        <input id="eCarName" type="text"/>
+        <label class="flabel">Ставка за эту машину, $</label>
+        <input id="eCarRate" type="number" inputmode="decimal" min="0"/>
+      </div>
+      <div id="eEvFields">
+        <label class="flabel">Одометр, миль</label>
+        <input class="odo" id="eOdo" type="number" inputmode="numeric" min="0"/>
+        <div id="eFuelFields">
+          <label class="flabel">Сумма заправки, $</label>
+          <input id="eAmount" type="number" inputmode="decimal" min="0"/>
+          <label class="flabel">Галлоны (необязательно)</label>
+          <input id="eGallons" type="number" inputmode="decimal" min="0"/>
+        </div>
+        <div id="eLevelRow">
+          <label class="flabel">Уровень топлива</label>
+          <select id="eFuelLevel"></select>
+        </div>
+      </div>
+      <div class="err" id="eErr"></div>
+      <div class="sheet-actions">
+        <button class="cancelbtn sheet-cancel">Cancel</button>
+        <button class="lime" id="eConfirm">Done</button>
+      </div>
+      <button class="redbtn" id="eDelete" style="display:none;margin-top:12px;padding:11px">🗑 Delete</button>
     </div>
   </div>
 </div>
@@ -674,21 +708,21 @@ function eventHtml(trip, e){
   if (e.type === 'fuel') extra = ' · ' + money(e.amount) + (e.gallons ? ' · ' + e.gallons + ' гал' : '');
   if (e.type === 'start') extra = ' · топливо: ' + fuelText(trip.startFuel);
   if (e.type === 'finish') extra = ' · топливо: ' + fuelText(trip.endFuel);
-  return '<div class="event"><div class="evicon">' + meta.icon + '</div><div class="grow">' +
+  return '<div class="event tappable" data-ev="' + e.id + '"><div class="evicon">' + meta.icon + '</div><div class="grow">' +
     '<div class="name">' + esc(title) + '</div>' +
     '<div class="meta">' + fmtDate(e.ts) + (Number.isFinite(e.odo) ? ' · одометр ' + Number(e.odo).toLocaleString('en-US') : '') + esc(extra) +
-    (e.label ? '<br>' + esc(e.label) : '') + '</div></div></div>';
+    (e.label ? '<br>' + esc(e.label) : '') + '</div></div><div class="evhint">✎</div></div>';
 }
 function carHtml(car){
   const m = carMiles(car), pm = carPerMile(car);
   const route = esc(car.pickupLabel || '—') + ' → ' + esc(car.status === 'delivered' ? (car.dropLabel || '—') : '…');
   const odoLine = 'Пикап: одометр ' + Number(car.pickupOdo).toLocaleString('en-US') +
     (car.status === 'delivered' ? ' · Выгрузка: ' + Number(car.dropOdo).toLocaleString('en-US') + ' · ' + m + ' миль' : ' · на борту');
-  return '<div class="onboard-row"><div class="caricon">🚗</div><div class="grow">' +
+  return '<div class="onboard-row tappable" data-car="' + car.id + '"><div class="caricon">🚗</div><div class="grow">' +
     '<div class="name">' + esc(car.name) + '</div>' +
     '<div class="meta">' + route + '<br>' + odoLine + '</div></div>' +
     '<div><div class="price">' + money(car.rate) + '</div>' +
-    (pm != null ? '<div class="permi">' + moneyMi(pm) + ' / миля</div>' : '') + '</div></div>';
+    (pm != null ? '<div class="permi">' + moneyMi(pm) + ' / миля</div>' : '') + '</div><div class="evhint">✎</div></div>';
 }
 function tripRouteText(t){
   const fp = t.events.find(e => e.type === 'pickup');
@@ -752,6 +786,8 @@ function render(){
   $('eventsList').innerHTML = (trip && trip.events.length)
     ? trip.events.slice().reverse().map(e => eventHtml(trip, e)).join('')
     : '<div class="empty">Событий пока нет</div>';
+  bindEditable($('carsList'), trip);
+  bindEditable($('eventsList'), trip);
   if (!sbEnabled()) setSyncLine('Данные хранятся на этом устройстве');
   renderMap('current', 'map', 'mapCard', trip);
   renderDropList();
@@ -985,6 +1021,7 @@ function openTripDetail(id){
     (t.events.length ? t.events.slice().reverse().map(e => eventHtml(t, e)).join('') : '<div class="empty">Событий нет</div>') +
     '<button class="redbtn" id="detailDelete" style="margin-top:12px;padding:11px">🗑 Delete</button></div>';
   $('detailDelete').addEventListener('click', () => { deleteTripById(id); showView('history'); });
+  bindEditable($('detailContent'), t);
   showView('detail');
   renderMap('detail', 'detailMap', 'detailMapCard', t);
 }
@@ -1041,8 +1078,8 @@ function importDataFromFile(file){
    Геолокация снимается при открытии листа и ничего не блокирует.
    Отмена ничего не сохраняет; «Готово» вызывает соответствующий
    confirm*, который при успехе закрывает лист через closeSheet(). */
-const SHEETS = { start: 'sheetStart', pickup: 'sheetPickup', drop: 'sheetDrop', fuel: 'sheetFuel', finish: 'sheetFinish' };
-const SHEET_TITLES = { start: 'START', pickup: 'PICKUP', drop: 'DROP', fuel: 'FUEL', finish: 'FINISH' };
+const SHEETS = { start: 'sheetStart', pickup: 'sheetPickup', drop: 'sheetDrop', fuel: 'sheetFuel', finish: 'sheetFinish', edit: 'sheetEdit' };
+const SHEET_TITLES = { start: 'START', pickup: 'PICKUP', drop: 'DROP', fuel: 'FUEL', finish: 'FINISH', edit: 'EDIT' };
 let openSheetName = null;
 let selectedDropCarId = null;
 function closeSheet(){
@@ -1196,6 +1233,124 @@ function confirmFinish(){
   showView('history');
 }
 
+/* ---------------- Правка машины / события ----------------
+   Нажатие на строку машины или события (в текущем рейсе и в деталях
+   истории) открывает лист правки. Менять можно только «человеческие»
+   поля: название и ставку машины; одометр события; сумму/галлоны
+   заправки; уровень топлива на старте/финише. Тип, время и локация
+   не редактируются. Одометр события пикапа/выгрузки зеркалится в
+   карточку машины. Удаление: заправка — всегда; пикап — только пока
+   машина не выгружена (машина удаляется вместе с ним); выгрузка —
+   только в текущем рейсе (машина возвращается «на борт»). Старт и
+   финиш не удаляются. После правки всё пересчитывается само, т.к.
+   метрики каждый раз считаются из событий и машин. */
+let editCtx = null;
+function findTrip(id){
+  if (app.current && app.current.id === id) return app.current;
+  return (app.trips || []).find(t => t.id === id) || null;
+}
+function bindEditable(container, trip){
+  if (!container || !trip) return;
+  container.querySelectorAll('[data-car]').forEach(el => el.addEventListener('click', () => openEditSheet({ tripId: trip.id, kind: 'car', carId: el.getAttribute('data-car') })));
+  container.querySelectorAll('[data-ev]').forEach(el => el.addEventListener('click', () => openEditSheet({ tripId: trip.id, kind: 'event', eventId: el.getAttribute('data-ev') })));
+}
+function openEditSheet(ctx){
+  const trip = findTrip(ctx.tripId); if (!trip) return;
+  editCtx = ctx;
+  Object.keys(SHEETS).forEach(k => $(SHEETS[k]).classList.toggle('open', k === 'edit'));
+  $('sheetOverlay').classList.add('open');
+  document.body.classList.add('locked');
+  $('sheetTitle').textContent = 'EDIT';
+  showErr('eErr', '');
+  const isCar = ctx.kind === 'car';
+  $('eCarFields').style.display = isCar ? 'block' : 'none';
+  $('eEvFields').style.display = isCar ? 'none' : 'block';
+  let del = false;
+  if (isCar) {
+    const car = trip.cars.find(c => c.id === ctx.carId); if (!car) return;
+    $('eInfo').textContent = 'Машина · ' + (car.status === 'delivered' ? 'выгружена' : 'на борту');
+    $('eCarName').value = car.name;
+    $('eCarRate').value = car.rate;
+  } else {
+    const ev = trip.events.find(e => e.id === ctx.eventId); if (!ev) return;
+    const meta = EV_META[ev.type] || { title: ev.type };
+    const car = ev.carId ? trip.cars.find(c => c.id === ev.carId) : null;
+    $('eInfo').textContent = meta.title + (car ? ': ' + car.name : '') + ' · ' + fmtDate(ev.ts) + (ev.label ? ' · ' + ev.label : '');
+    $('eOdo').value = Number.isFinite(ev.odo) ? ev.odo : '';
+    $('eFuelFields').style.display = ev.type === 'fuel' ? 'block' : 'none';
+    if (ev.type === 'fuel') { $('eAmount').value = ev.amount != null ? ev.amount : ''; $('eGallons').value = ev.gallons != null ? ev.gallons : ''; }
+    $('eLevelRow').style.display = (ev.type === 'start' || ev.type === 'finish') ? 'block' : 'none';
+    if (ev.type === 'start') fillFuelSelect($('eFuelLevel'), Number(trip.startFuel));
+    if (ev.type === 'finish') fillFuelSelect($('eFuelLevel'), Number(trip.endFuel));
+    if (ev.type === 'fuel') del = true;
+    if (ev.type === 'pickup' && car && car.status !== 'delivered') del = true;
+    if (ev.type === 'drop' && app.current && app.current.id === trip.id) del = true;
+  }
+  $('eDelete').style.display = del ? 'block' : 'none';
+}
+function refreshAfterEdit(trip){
+  persist(); sbSyncSoon(); closeSheet();
+  render(); renderHistory(); renderDashboard();
+  if (detailTripId === trip.id && $('detailView').classList.contains('open')) openTripDetail(trip.id);
+}
+function confirmEdit(){
+  if (!editCtx) return;
+  const trip = findTrip(editCtx.tripId); if (!trip) { closeSheet(); return; }
+  if (editCtx.kind === 'car') {
+    const car = trip.cars.find(c => c.id === editCtx.carId); if (!car) { closeSheet(); return; }
+    const name = $('eCarName').value.trim();
+    if (!name) { showErr('eErr', 'Введите название машины.'); return; }
+    const rateRaw = $('eCarRate').value.trim(); const rate = Number(rateRaw);
+    if (rateRaw === '' || !Number.isFinite(rate) || rate < 0) { showErr('eErr', 'Введите ставку за машину, $.'); return; }
+    car.name = name; car.rate = rate;
+    refreshAfterEdit(trip); toast('Машина обновлена'); return;
+  }
+  const ev = trip.events.find(e => e.id === editCtx.eventId); if (!ev) { closeSheet(); return; }
+  const odo = readOdo($('eOdo'), 'eErr', null); if (odo === null) return;
+  const car = ev.carId ? trip.cars.find(c => c.id === ev.carId) : null;
+  if (ev.type === 'start') {
+    const others = trip.events.filter(e => e.id !== ev.id && Number.isFinite(e.odo));
+    if (others.length && odo > Math.min.apply(null, others.map(e => e.odo))) { showErr('eErr', 'Старт не может быть больше следующего одометра.'); return; }
+  }
+  if (ev.type !== 'start' && trip.startOdo != null && odo < trip.startOdo) { showErr('eErr', 'Одометр меньше старта рейса (' + Number(trip.startOdo).toLocaleString('en-US') + ').'); return; }
+  if (ev.type === 'pickup' && car && car.dropOdo != null && odo > car.dropOdo) { showErr('eErr', 'Пикап не может быть больше выгрузки (' + Number(car.dropOdo).toLocaleString('en-US') + ').'); return; }
+  if (ev.type === 'drop' && car && car.pickupOdo != null && odo < car.pickupOdo) { showErr('eErr', 'Выгрузка не может быть меньше пикапа (' + Number(car.pickupOdo).toLocaleString('en-US') + ').'); return; }
+  if (ev.type === 'fuel') {
+    const aRaw = $('eAmount').value.trim(); const amount = Number(aRaw);
+    if (aRaw === '' || !Number.isFinite(amount) || amount <= 0) { showErr('eErr', 'Введите сумму заправки, $.'); return; }
+    const gRaw = $('eGallons').value.trim(); const gallons = gRaw === '' ? null : Number(gRaw);
+    if (gallons !== null && (!Number.isFinite(gallons) || gallons < 0)) { showErr('eErr', 'Галлоны — цифрами или оставьте пустым.'); return; }
+    ev.amount = amount; ev.gallons = gallons;
+  }
+  ev.odo = odo;
+  if (ev.type === 'start') { trip.startOdo = odo; trip.startFuel = Number($('eFuelLevel').value); }
+  if (ev.type === 'finish') { trip.endOdo = odo; trip.endFuel = Number($('eFuelLevel').value); }
+  if (ev.type === 'pickup' && car) car.pickupOdo = odo;
+  if (ev.type === 'drop' && car) car.dropOdo = odo;
+  refreshAfterEdit(trip); toast('Сохранено');
+}
+function deleteEditTarget(){
+  if (!editCtx || editCtx.kind !== 'event') return;
+  const trip = findTrip(editCtx.tripId); if (!trip) { closeSheet(); return; }
+  const idx = trip.events.findIndex(e => e.id === editCtx.eventId); if (idx < 0) { closeSheet(); return; }
+  const ev = trip.events[idx];
+  const car = ev.carId ? trip.cars.find(c => c.id === ev.carId) : null;
+  if (ev.type === 'pickup') {
+    if (car && car.status === 'delivered') { toast('Нельзя: машина уже выгружена'); return; }
+    if (!confirm('Удалить пикап' + (car ? ' машины «' + car.name + '»' : '') + '? Машина тоже будет удалена из рейса.')) return;
+    trip.events.splice(idx, 1);
+    if (car) trip.cars = trip.cars.filter(c => c.id !== car.id);
+  } else if (ev.type === 'drop') {
+    if (!confirm('Удалить выгрузку' + (car ? ' машины «' + car.name + '»' : '') + '? Машина снова станет «на борту».')) return;
+    trip.events.splice(idx, 1);
+    if (car) { car.status = 'onboard'; car.dropOdo = null; car.dropLabel = null; car.dropLat = null; car.dropLon = null; }
+  } else if (ev.type === 'fuel') {
+    if (!confirm('Удалить эту заправку?')) return;
+    trip.events.splice(idx, 1);
+  } else { return; }
+  refreshAfterEdit(trip); toast('Удалено');
+}
+
 /* ---------------- Views / navigation ---------------- */
 function showView(which){
   $('mainView').classList.toggle('open', which === 'main');
@@ -1230,6 +1385,8 @@ function init(){
   $('dConfirm').addEventListener('click', confirmDrop);
   $('fConfirm').addEventListener('click', confirmFuel);
   $('finConfirm').addEventListener('click', confirmFinish);
+  $('eConfirm').addEventListener('click', confirmEdit);
+  $('eDelete').addEventListener('click', deleteEditTarget);
   $('navMain').addEventListener('click', () => showView('main'));
   $('navDash').addEventListener('click', () => showView('dash'));
   $('navHistory').addEventListener('click', () => showView('history'));
