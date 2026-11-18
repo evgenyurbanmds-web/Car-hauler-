@@ -6,203 +6,1255 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
   <meta http-equiv="Pragma" content="no-cache"/>
   <meta http-equiv="Expires" content="0"/>
-  <meta name="theme-color" content="#08111f"/>
+  <meta name="theme-color" content="#0A0E13"/>
   <link rel="manifest" href="./manifest.webmanifest"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
   <title>Car hauler</title>
   <style>
-    :root{--bg:#07101d;--card:#0f1b2d;--card2:#13243b;--border:#233955;--text:#f7f9fc;--muted:#8fa4bd;--blue:#3f9cff;--green:#35d28a;--red:#ff6868;--orange:#f7b84b}
-    *{box-sizing:border-box}html,body{margin:0;background:linear-gradient(180deg,#07101d,#0a1524 45%,#07101d);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;min-height:100%}body{padding-bottom:98px}.wrap{max-width:760px;margin:auto;padding:16px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.brand{font-size:22px;font-weight:850}.status{font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:999px;background:#102239;color:var(--muted)}.status.live{color:var(--green);border-color:#225f48}.card{background:rgba(15,27,45,.97);border:1px solid var(--border);border-radius:20px;padding:15px;margin-bottom:13px;box-shadow:0 12px 28px rgba(0,0,0,.16)}.route{font-size:20px;font-weight:800;margin-bottom:6px}.loc{font-size:13px;color:var(--blue);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.trackbar{margin-top:12px;display:flex;gap:8px;align-items:center;font-size:12px;color:var(--muted)}.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}.dot.live{background:var(--green);box-shadow:0 0 0 5px rgba(53,210,138,.09)}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:12px}.metric{padding:12px;background:var(--card2);border:1px solid var(--border);border-radius:14px}.metric span{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}.metric strong{font-size:19px}.good{color:var(--green)}.bad{color:var(--red)}h2{font-size:15px;margin:0 0 11px}.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}button{appearance:none;border:0;color:white;background:#17365b;font-weight:780;border-radius:15px;padding:15px 10px;font-size:15px}button:active{transform:scale(.985)}.blue{background:#1477e9}.green{background:#13704f}.orange{background:#8a5f13}.red{background:#7b3137}.onboard-row,.event{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid #1c304a}.onboard-row:last-child,.event:last-child{border-bottom:0}.caricon,.evicon{width:39px;height:39px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:#152c47;flex:0 0 auto}.grow{flex:1;min-width:0}.name{font-weight:750}.meta{font-size:12px;color:var(--muted);margin-top:3px}.price{font-weight:800;color:var(--green)}.empty{color:var(--muted);text-align:center;padding:12px 0}.sheet{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}.sheet.open{display:block}label{display:block;font-size:12px;color:var(--muted);margin:9px 0 5px}input,select{width:100%;border-radius:12px;border:1px solid var(--border);background:#091728;color:#fff;padding:12px 13px;font-size:16px}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.hint{font-size:12px;color:var(--muted);line-height:1.45;margin-top:10px}.bottom{position:fixed;left:0;right:0;bottom:0;background:rgba(6,14,26,.94);backdrop-filter:blur(14px);border-top:1px solid var(--border);padding:10px 14px calc(10px + env(safe-area-inset-bottom));z-index:500}.bottomin{max-width:760px;margin:auto;display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.tag{font-size:11px;padding:5px 8px;border-radius:999px;background:#132c46;color:var(--blue)}.mini{padding:7px 9px;font-size:12px;margin-left:5px}.danger{background:#7b3137}.undo{background:#5c4918}
-    .history{display:none}.history.open{display:block}.trip-card{border:1px solid var(--border);background:var(--card2);border-radius:16px;padding:13px;margin-top:10px;cursor:pointer}.trip-head{display:flex;justify-content:space-between;gap:10px}.trip-route{font-weight:800}.trip-date{font-size:11px;color:var(--muted);white-space:nowrap}.trip-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}.trip-stat{background:#0b192a;border-radius:10px;padding:8px}.trip-stat span{font-size:10px;color:var(--muted);display:block}.trip-stat strong{font-size:14px}.detail{display:none}.detail.open{display:block}.back{padding:10px 12px;margin-bottom:10px}.map{height:320px;border-radius:15px;overflow:hidden;border:1px solid var(--border);background:#0a1625;margin:10px 0 13px}.summary-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.summary-item{background:var(--card2);border-radius:12px;padding:10px}.summary-item span{font-size:10px;color:var(--muted);display:block}.summary-item strong{font-size:16px}.leaflet-control-attribution{font-size:9px!important}.section-title{display:flex;align-items:center;justify-content:space-between}.history-count{font-size:12px;color:var(--muted)}
-    @media(min-width:650px){.grid{grid-template-columns:repeat(4,1fr)}.actions{grid-template-columns:repeat(4,1fr)}.trip-stats{grid-template-columns:repeat(6,1fr)}.summary-grid{grid-template-columns:repeat(4,1fr)}}
+    :root{--bg:#0A0E13;--card:#141A21;--card2:#1B232D;--border:#232C36;--text:#F2F5F7;--muted:#8A97A5;--lime:#B8E62E;--amber:#FFB224;--gray:#3A4654;--red:#FF6B6B}
+    *{box-sizing:border-box}html,body{margin:0;background:linear-gradient(180deg,#0A0E13,#0C1118 45%,#0A0E13);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;min-height:100%}
+    body{padding-bottom:110px}
+    .wrap{max-width:760px;margin:auto;padding:16px}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+    .brand{font-size:22px;font-weight:850}
+    .status{font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:999px;background:var(--card);color:var(--muted);white-space:nowrap}
+    .status.live{color:var(--lime);border-color:#3D4A1E}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:15px;margin-bottom:13px}
+    .route{font-size:20px;font-weight:800;margin-bottom:4px}
+    .badge{display:inline-block;background:var(--lime);color:#0A0E13;font-size:11px;font-weight:800;border-radius:20px;padding:3px 10px;vertical-align:middle;margin-left:8px}
+    .sub{font-size:13px;color:var(--muted)}
+    .loc{font-size:13px;color:var(--lime);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .hero{text-align:center;padding:10px 0 4px}
+    .hero-label{font-size:12px;letter-spacing:1px;color:var(--muted)}
+    .hero-num{font-size:46px;font-weight:800;color:var(--lime);line-height:1.15}
+    .hero-sub{font-size:13px;color:var(--muted)}
+    .milesbar{display:flex;height:10px;border-radius:5px;overflow:hidden;background:var(--card2);margin-top:14px}
+    .mb-loaded{background:var(--lime)}
+    .mb-empty{background:var(--amber)}
+    .barlabels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px}
+    .barlabels b{color:var(--text)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
+    @media(max-width:520px){.grid{grid-template-columns:repeat(2,1fr)}}
+    .metric{padding:12px;background:var(--card2);border:1px solid var(--border);border-radius:14px}
+    .metric span{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}
+    .metric strong{font-size:19px}
+    .metric .per{font-size:13px;color:var(--lime);font-weight:700;margin-top:2px}
+    .metric .per.amber{color:var(--amber)}
+    .good{color:var(--lime)}.bad{color:var(--red)}
+    h2{font-size:15px;margin:0 0 11px}
+    button{appearance:none;border:1px solid var(--border);color:var(--text);background:var(--card2);font-weight:780;border-radius:15px;padding:15px 10px;font-size:15px;cursor:pointer;width:100%}
+    button:active{transform:scale(.985)}
+    button:disabled{opacity:.38;cursor:default;transform:none}
+    .lime{background:var(--lime);color:#0A0E13;border-color:var(--lime)}
+    .amberbtn{background:var(--amber);color:#0A0E13;border-color:var(--amber)}
+    .redbtn{background:#7B2D33;color:#fff;border-color:#7B2D33}
+    .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .tiles button{padding:20px 10px;font-size:17px;border-radius:16px;font-weight:800;letter-spacing:.3px}
+    .tiles button.wide{grid-column:1/-1}
+    .tiles button.accent{background:var(--lime);color:#0A0E13;border-color:var(--lime)}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .sheet-overlay{position:fixed;inset:0;background:rgba(2,6,12,.68);z-index:80;display:none;align-items:flex-end;justify-content:center}
+    .sheet-overlay.open{display:flex}
+    .sheet{background:#10161D;border:1px solid var(--border);border-bottom:0;border-radius:22px 22px 0 0;width:100%;max-width:760px;max-height:92vh;overflow-y:auto;padding:16px 16px calc(16px + env(safe-area-inset-bottom));animation:sheetUp .22s ease-out}
+    @keyframes sheetUp{from{transform:translateY(46px);opacity:.35}to{transform:none;opacity:1}}
+    .sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px}
+    .sheet-title{font-size:19px;font-weight:850}
+    .sheet-x{width:46px;height:46px;flex:0 0 auto;border-radius:13px;font-size:17px;padding:0;background:var(--card2)}
+    .sheet-sec{display:none}
+    .sheet-sec.open{display:block}
+    .sheet-actions{display:grid;grid-template-columns:1fr 2fr;gap:10px;margin-top:15px}
+    .sheet-actions button{padding:18px 10px;font-size:17px}
+    .cancelbtn{background:var(--card2)}
+    body.locked{overflow:hidden}
+    label.flabel{display:block;font-size:12px;color:var(--muted);margin:10px 0 5px}
+    input,select{width:100%;background:#0A0E13;border:1px solid var(--border);border-radius:13px;color:var(--text);padding:13px 12px;font-size:16px;outline:none}
+    input:focus,select:focus{border-color:var(--lime)}
+    input.odo{font-size:24px;font-weight:800;text-align:center;padding:15px 12px}
+    .notice{background:#241B0C;border:1px solid #6B5316;color:var(--amber);border-radius:13px;padding:11px 12px;font-size:13px;margin-top:10px;line-height:1.45}
+    .err{background:#2A1215;border:1px solid #6E2B31;color:var(--red);border-radius:13px;padding:11px 12px;font-size:13px;margin-top:10px;display:none;line-height:1.45}
+    .geostatus{font-size:12px;color:var(--muted);margin-top:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .onboard-row,.event{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid #1B232D}
+    .onboard-row:last-child,.event:last-child{border-bottom:0}
+    .caricon,.evicon{width:39px;height:39px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:var(--card2);flex:0 0 auto;font-size:18px}
+    .grow{flex:1;min-width:0}
+    .name{font-weight:750}
+    .meta{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5}
+    .price{font-weight:800;white-space:nowrap}
+    .permi{font-size:12px;color:var(--lime);font-weight:700;white-space:nowrap}
+    .dropbtn{width:auto;padding:13px 16px;font-size:15px;flex:0 0 auto}
+    .empty{font-size:13px;color:var(--muted);padding:8px 0;line-height:1.5}
+    .view{display:none}.view.open{display:block}
+    .trip-card{background:var(--card2);border:1px solid var(--border);border-radius:16px;padding:13px;margin-bottom:11px}
+    .trip-card.clickable{cursor:pointer}
+    .trip-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+    .trip-route{font-weight:800;font-size:16px}
+    .trip-date{font-size:12px;color:var(--muted);white-space:nowrap}
+    .trip-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+    .trip-stat span{display:block;font-size:11px;color:var(--muted)}
+    .trip-stat strong{font-size:15px}
+    .navbar{position:fixed;left:0;right:0;bottom:0;background:rgba(10,14,19,.97);border-top:1px solid var(--border);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:flex;gap:10px;z-index:50}
+    .navbar button{flex:1;padding:14px;font-size:16px}
+    .navbar button.active{background:var(--lime);color:#0A0E13;border-color:var(--lime)}
+    #map,#detailMap{height:230px;border-radius:14px;overflow:hidden;background:#0A0E13}
+    .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;background:var(--card);border:1px solid var(--lime);color:var(--text);padding:12px 18px;border-radius:999px;font-size:14px;font-weight:700;z-index:99;display:none;box-shadow:0 10px 30px rgba(0,0,0,.4);max-width:92vw;text-align:center}
+    .sync{font-size:11px;color:var(--muted);margin-top:6px}
+    .seg{display:flex;background:var(--card2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+    .seg button{flex:1;background:transparent;border:0;border-radius:0;padding:10px;font-size:14px;color:var(--muted)}
+    .seg button.active{background:var(--lime);color:#0A0E13;font-weight:800}
+    .weeknav{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .weeknav .arrow{width:52px;flex:0 0 auto;padding:12px;font-size:18px}
+    .weeklabel{font-size:17px;font-weight:800;text-align:center}
+    .chart{display:flex;align-items:flex-end;gap:8px;height:118px;margin-top:10px}
+    .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;min-width:0}
+    .bar-val{font-size:11px;color:var(--muted);white-space:nowrap}
+    .bar{width:100%;border-radius:6px 6px 0 0;background:var(--gray);min-height:4px}
+    .bar.sel{background:var(--lime)}
+    .bar-lab{font-size:10px;color:var(--muted);text-align:center;line-height:1.25}
+    .delta{font-weight:800;white-space:nowrap}
+    .delta.up{color:var(--lime)}
+    .delta.down{color:var(--amber)}
+    .cmp{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.6}
+    .weekhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:12px 2px 8px;border-bottom:1px solid var(--border);margin:4px 0 10px}
+    .weekhead .wt{font-weight:800;font-size:15px}
+    .weekhead .wv{color:var(--muted);font-size:13px;white-space:nowrap}
+    .weekhead .wv b{color:var(--lime)}
+    .dash-sub{font-size:12px;color:var(--muted);margin-top:3px}
   </style>
 </head>
 <body>
-<div class="wrap" id="mainView">
-  <div class="top"><div class="brand">🚛 Car hauler</div><div id="status" class="status">Нет рейса</div></div>
-  <section class="card"><div id="route" class="route">Начните рейс</div><div id="location" class="loc">📍 GPS не определён</div><div class="trackbar"><div id="trackDot" class="dot"></div><span id="trackState">GPS-трек выключен</span></div><div class="grid"><div class="metric"><span>GPS mileage</span><strong id="gpsMiles">0.0 mi</strong></div><div class="metric"><span>Одометр mileage</span><strong id="odoMiles">0 mi</strong></div><div class="metric"><span>Средний MPG*</span><strong id="mpg">—</strong></div><div class="metric"><span>Fuel / mile</span><strong id="fuelMi">$0.00</strong></div><div class="metric"><span>Себестоимость / mile</span><strong id="costMi">$0.00</strong></div><div class="metric"><span>Revenue / mile</span><strong id="revMi">$0.00</strong></div><div class="metric"><span>Revenue</span><strong id="revenue">$0</strong></div><div class="metric"><span>Profit</span><strong id="profit" class="good">$0</strong></div></div></section>
-  <section class="card"><h2>Основные действия</h2><div class="actions"><button onclick="showSheet('pickup')">🚗 Pickup</button><button class="green" onclick="showDelivery()">✅ Delivery</button><button onclick="showSheet('fuel')">⛽ Fuel</button><button class="orange" onclick="showSheet('parking')">🅿️ Parking</button></div>
-    <div id="pickup" class="sheet"><h2>Pickup</h2><label>Автомобиль</label><input id="pCar" placeholder="2025 VW Tiguan"><div class="row"><div><label>Цена перевозки $</label><input id="pPrice" autocomplete="off" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" oninput="this.value=this.value.replace(/,/g,'.').replace(/[^0-9.]/g,'').replace(/(\..*)\./g,'$1')"></div><div><label>Одометр</label><input id="pOdo" autocomplete="off" type="tel" inputmode="numeric" pattern="[0-9]*" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div></div><button class="green" style="width:100%;margin-top:12px" onclick="pickup()">Добавить на трейлер</button></div>
-    <div id="delivery" class="sheet"><h2>Delivery — выбрать автомобиль</h2><label>Автомобиль на трейлере</label><select id="dCar"></select><label>Одометр</label><input id="dOdo" autocomplete="off" type="tel" inputmode="numeric" pattern="[0-9]*" oninput="this.value=this.value.replace(/[^0-9]/g,'')"><button class="green" style="width:100%;margin-top:12px" onclick="deliver()">Выгрузить</button></div>
-    <div id="fuel" class="sheet"><h2>Fuel</h2><div class="row"><div><label>Gallons</label><input id="fGal" autocomplete="off" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" oninput="this.value=this.value.replace(/,/g,'.').replace(/[^0-9.]/g,'').replace(/(\..*)\./g,'$1')"></div><div><label>Сумма $</label><input id="fCost" autocomplete="off" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" oninput="this.value=this.value.replace(/,/g,'.').replace(/[^0-9.]/g,'').replace(/(\..*)\./g,'$1')"></div></div><label>Одометр</label><input id="fOdo" autocomplete="off" type="tel" inputmode="numeric" pattern="[0-9]*" oninput="this.value=this.value.replace(/[^0-9]/g,'')"><button class="blue" style="width:100%;margin-top:12px" onclick="fuel()">Сохранить заправку</button></div>
-    <div id="parking" class="sheet"><h2>Parking</h2><label>Сумма $</label><input id="pkCost" autocomplete="off" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" oninput="this.value=this.value.replace(/,/g,'.').replace(/[^0-9.]/g,'').replace(/(\..*)\./g,'$1')"><label>Примечание</label><input id="pkNote" placeholder="Truck stop / overnight / auction"><label>Одометр (необязательно)</label><input id="pkOdo" autocomplete="off" type="tel" inputmode="numeric" pattern="[0-9]*" oninput="this.value=this.value.replace(/[^0-9]/g,'')"><button class="orange" style="width:100%;margin-top:12px" onclick="parking()">Сохранить парковку</button></div>
-    <div id="start" class="sheet"><h2>Start Trip</h2><label>Стартовый одометр</label><input id="sOdo" autocomplete="off" type="tel" inputmode="numeric" pattern="[0-9]*" oninput="this.value=this.value.replace(/[^0-9]/g,'')"><button class="blue" style="width:100%;margin-top:12px" onclick="startTrip()">▶️ Начать рейс</button><div class="hint">GPS собирается, пока веб-приложение активно. iPhone может приостанавливать GPS в фоне.</div></div>
-  </section>
-  <section class="card" id="onboardSection"><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">На трейлере сейчас</h2><span id="onboardCount" class="tag">0 авто</span></div><div id="onboard"><div class="empty">Машин на трейлере нет</div></div></section>
-  <section class="card"><h2>События текущего рейса</h2><div id="events"><div class="empty">Событий пока нет</div></div></section>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">🚛 Car hauler</div>
+    <div class="status" id="statusPill">Нет рейса</div>
+  </div>
+
+  <!-- ===================== MAIN VIEW ===================== -->
+  <div id="mainView" class="view open">
+    <div class="card">
+      <div class="route"><span id="routeTitle">Новый рейс</span><span class="badge" id="tripBadge" style="display:none">В ПУТИ</span></div>
+      <div class="sub" id="routeSub">Нажмите START, чтобы начать рейс</div>
+      <div class="loc" id="lastLoc"></div>
+      <div class="hero">
+        <div class="hero-label">ВЫРУЧКА ЗА МИЛЮ · ГРЯЗНАЯ</div>
+        <div class="hero-num" id="mGrossHero">$0.00</div>
+        <div class="hero-sub" id="mHeroSub">всего $0 · после топлива $0.00/миля</div>
+      </div>
+      <div class="milesbar"><div class="mb-loaded" id="mbLoaded" style="width:0%"></div><div class="mb-empty" id="mbEmpty" style="width:0%"></div></div>
+      <div class="barlabels"><span>Гружёные <b id="mbLoadedTxt">0</b></span><span>Пустые <b id="mbEmptyTxt">0</b></span></div>
+      <div class="grid">
+        <div class="metric"><span>Выручка</span><strong id="mRevenue">$0</strong><div class="per">&nbsp;</div></div>
+        <div class="metric"><span>Топливо</span><strong id="mFuel">$0</strong><div class="per amber" id="mFuelMi">$0.00 / миля</div></div>
+        <div class="metric"><span>После топлива</span><strong id="mProfit">$0</strong><div class="per" id="mProfitMi">$0.00 / миля</div></div>
+        <div class="metric"><span>Мили рейса</span><strong id="mMiles">0</strong><div class="per">&nbsp;</div></div>
+        <div class="metric"><span>Пустые мили</span><strong id="mEmpty">0</strong><div class="per amber" id="mEmptyPct">&nbsp;</div></div>
+        <div class="metric"><span>Машин на борту</span><strong id="mOnboard">0</strong><div class="per" id="mDelivered">&nbsp;</div></div>
+      </div>
+      <div class="sync" id="syncLine">Данные хранятся на этом устройстве</div>
+    </div>
+
+    <div class="card">
+      <h2>Действия</h2>
+      <div class="tiles">
+        <button class="wide" id="btnStart">▶ START</button>
+        <button id="btnPickup">↑ PICKUP</button>
+        <button id="btnDrop">↓ DROP</button>
+        <button id="btnFuel">FUEL</button>
+        <button id="btnFinish">🏁 FINISH</button>
+      </div>
+    </div>
+
+    <div class="card" id="carsCard">
+      <h2>Машины</h2>
+      <div id="carsList"><div class="empty">Машин пока нет. Нажмите PICKUP, чтобы добавить первую.</div></div>
+    </div>
+
+    <div class="card" id="mapCard" style="display:none">
+      <h2>Карта рейса</h2>
+      <div id="map"></div>
+    </div>
+
+    <div class="card">
+      <h2>События</h2>
+      <div id="eventsList"><div class="empty">Событий пока нет</div></div>
+    </div>
+  </div>
+
+  <!-- ===================== DASHBOARD VIEW ===================== -->
+  <div id="dashView" class="view">
+    <div class="card">
+      <div class="weeknav">
+        <button class="arrow" id="dashPrev" aria-label="Предыдущая неделя">‹</button>
+        <div>
+          <div class="weeklabel" id="dashWeekLabel">Неделя</div>
+          <div class="dash-sub" style="text-align:center" id="dashWeekSub"></div>
+        </div>
+        <button class="arrow" id="dashNext" aria-label="Следующая неделя">›</button>
+      </div>
+      <div style="margin-top:12px">
+        <label class="flabel" style="margin-top:0">Неделя с:</label>
+        <div class="seg">
+          <button id="dashModeMon">Mon</button>
+          <button id="dashModeSun">Sun</button>
+        </div>
+      </div>
+      <div class="hero">
+        <div class="hero-label">ГРЯЗНАЯ МИЛЯ · НЕДЕЛЯ</div>
+        <div class="hero-num" id="dGross">$0.00</div>
+        <div class="hero-sub" id="dGrossSub">выручка $0 · 0 миль</div>
+      </div>
+      <div class="grid">
+        <div class="metric"><span>Выручка</span><strong id="dRev">$0</strong><div class="per">&nbsp;</div></div>
+        <div class="metric"><span>Мили</span><strong id="dMiles">0</strong><div class="per">&nbsp;</div></div>
+        <div class="metric"><span>Топливо</span><strong id="dFuel">$0</strong><div class="per amber" id="dFuelMi">$0.00 / миля</div></div>
+        <div class="metric"><span>После топлива</span><strong id="dProfit">$0</strong><div class="per" id="dProfitMi">$0.00 / миля</div></div>
+        <div class="metric"><span>Пустые мили</span><strong id="dEmpty">0</strong><div class="per amber" id="dEmptyPct">&nbsp;</div></div>
+        <div class="metric"><span>Рейсов · машин</span><strong id="dTrips">0 · 0</strong><div class="per">&nbsp;</div></div>
+      </div>
+      <div class="cmp" id="dCompare"></div>
+    </div>
+
+    <div class="card">
+      <h2>Выручка по неделям</h2>
+      <div class="chart" id="dChart"></div>
+    </div>
+
+    <div class="card">
+      <h2>Топливо · неделя</h2>
+      <div class="grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="metric"><span>Себест. мили · средняя</span><strong id="fAvg">—</strong><div class="per amber">&nbsp;</div></div>
+        <div class="metric"><span>Минимум</span><strong id="fMin">—</strong><div class="per amber" id="fMinRoute">&nbsp;</div></div>
+        <div class="metric"><span>Максимум</span><strong id="fMax">—</strong><div class="per amber" id="fMaxRoute">&nbsp;</div></div>
+        <div class="metric"><span>Галлонов</span><strong id="fGal">—</strong><div class="per">&nbsp;</div></div>
+        <div class="metric"><span>Средняя цена галлона</span><strong id="fPrice">—</strong><div class="per">&nbsp;</div></div>
+        <div class="metric"><span>Расход, миль/галлон</span><strong id="fMpg">—</strong><div class="per">&nbsp;</div></div>
+      </div>
+      <div class="empty" id="fNote" style="display:none">Галлоны не вводились — расход и цена галлона не считаются.</div>
+    </div>
+
+    <div class="card">
+      <h2>История по неделям</h2>
+      <div id="dHistory"><div class="empty">Завершённых рейсов пока нет</div></div>
+    </div>
+
+    <div class="card">
+      <h2>Данные</h2>
+      <div class="sub" style="margin-bottom:11px">Резервная копия всех данных (активный рейс и история) одним файлом. Сохраните файл — и данные переживут любое обновление приложения.</div>
+      <div class="row2">
+        <button class="lime" id="btnExport">⬇️ Export data</button>
+        <button id="btnImport">⬆️ Import data</button>
+      </div>
+      <input type="file" id="importFile" accept=".json,application/json" style="display:none"/>
+    </div>
+  </div>
+
+  <!-- ===================== HISTORY VIEW ===================== -->
+  <div id="historyView" class="view">
+    <div class="card">
+      <h2>История рейсов · <span id="historyCount">0</span></h2>
+      <div id="historyList"><div class="empty">Завершённых рейсов пока нет</div></div>
+    </div>
+  </div>
+
+  <!-- ===================== TRIP DETAIL VIEW ===================== -->
+  <div id="detailView" class="view">
+    <button id="detailBack" style="margin-bottom:12px">← Back</button>
+    <div id="detailContent"></div>
+    <div class="card" id="detailMapCard" style="display:none">
+      <h2>Карта рейса</h2>
+      <div id="detailMap"></div>
+    </div>
+  </div>
 </div>
 
-<div class="wrap history" id="statsView">
-  <div class="top"><div class="brand">📊 Общая статистика</div><div class="status" onclick="showMain()" style="cursor:pointer">← Назад</div></div>
-  <section class="card">
-    <h2>Все рейсы + текущий</h2>
-    <div id="overallStats" class="summary-grid"></div>
-    <div class="hint">Статистика считается из всех рейсов в History плюс текущего активного рейса. Если удалить рейс из History, его miles, fuel, gallons, revenue и расходы автоматически исчезнут из общей статистики.</div>
-  </section>
+<div class="navbar">
+  <button id="navMain" class="active">🚛 Trip</button>
+  <button id="navDash">📊 Dashboard</button>
+  <button id="navHistory">🗂 History</button>
+</div>
+<!-- ===================== BOTTOM SHEET (модальный ввод) ===================== -->
+<div class="sheet-overlay" id="sheetOverlay">
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="sheet-head">
+      <div class="sheet-title" id="sheetTitle">Действие</div>
+      <button class="sheet-x" id="sheetX" aria-label="Закрыть">✕</button>
+    </div>
+
+    <!-- СТАРТ -->
+    <div class="sheet-sec" id="sheetStart">
+      <label class="flabel">Одометр, миль</label>
+      <input class="odo" id="sOdo" type="number" inputmode="numeric" min="0" placeholder="120000"/>
+      <label class="flabel">Уровень топлива</label>
+      <select id="sFuel"></select>
+      <div class="geostatus" id="sGeo">📍 ищу локацию…</div>
+      <div class="err" id="sErr"></div>
+      <div class="sheet-actions">
+        <button class="cancelbtn sheet-cancel">Cancel</button>
+        <button class="lime" id="sConfirm">Done</button>
+      </div>
+    </div>
+
+    <!-- ПИКАП -->
+    <div class="sheet-sec" id="sheetPickup">
+      <div class="notice" id="pAutoStart" style="display:none">Рейс ещё не начат. При добавлении машины рейс начнётся автоматически с этим же одометром.</div>
+      <label class="flabel">Машина (марка / модель)</label>
+      <input id="pCar" type="text" placeholder="Например, Ram ProMaster"/>
+      <label class="flabel">Ставка за эту машину, $</label>
+      <input id="pPrice" type="number" inputmode="decimal" min="0" placeholder="650"/>
+      <label class="flabel">Одометр, миль</label>
+      <input class="odo" id="pOdo" type="number" inputmode="numeric" min="0" placeholder="120000"/>
+      <div id="pFuelRow">
+        <label class="flabel">Уровень топлива (для автостарта рейса)</label>
+        <select id="pFuel"></select>
+      </div>
+      <div class="geostatus" id="pGeo">📍 ищу локацию…</div>
+      <div class="err" id="pErr"></div>
+      <div class="sheet-actions">
+        <button class="cancelbtn sheet-cancel">Cancel</button>
+        <button class="lime" id="pConfirm">Done</button>
+      </div>
+    </div>
+
+    <!-- ВЫГРУЗКА -->
+    <div class="sheet-sec" id="sheetDrop">
+      <div class="empty" id="dEmpty" style="display:none">Сейчас на борту нет машин — выгружать нечего.</div>
+      <div id="dList"></div>
+      <button class="cancelbtn sheet-cancel" id="dCancelList" style="margin-top:12px">Cancel</button>
+      <div id="dFields" style="display:none">
+        <label class="flabel">Одометр, миль</label>
+        <input class="odo" id="dOdo" type="number" inputmode="numeric" min="0" placeholder="120000"/>
+        <div class="geostatus" id="dGeo">📍 ищу локацию…</div>
+        <div class="err" id="dErr"></div>
+        <div class="sheet-actions">
+          <button class="cancelbtn" id="dBack">← Cars</button>
+          <button class="amberbtn" id="dConfirm">Done</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ЗАПРАВКА -->
+    <div class="sheet-sec" id="sheetFuel">
+      <label class="flabel">Сумма заправки, $</label>
+      <input id="fCost" type="number" inputmode="decimal" min="0" placeholder="180"/>
+      <label class="flabel">Одометр, миль</label>
+      <input class="odo" id="fOdo" type="number" inputmode="numeric" min="0" placeholder="120000"/>
+      <label class="flabel">Галлоны (необязательно)</label>
+      <input id="fGal" type="number" inputmode="decimal" min="0" placeholder=""/>
+      <div class="geostatus" id="fGeo">📍 ищу локацию…</div>
+      <div class="err" id="fErr"></div>
+      <div class="sheet-actions">
+        <button class="cancelbtn sheet-cancel">Cancel</button>
+        <button id="fConfirm">Done</button>
+      </div>
+    </div>
+
+    <!-- ФИНИШ -->
+    <div class="sheet-sec" id="sheetFinish">
+      <label class="flabel">Финальный одометр, миль</label>
+      <input class="odo" id="finOdo" type="number" inputmode="numeric" min="0" placeholder="120000"/>
+      <label class="flabel">Уровень топлива</label>
+      <select id="finFuel"></select>
+      <div class="geostatus" id="finGeo">📍 ищу локацию…</div>
+      <div class="notice" id="finWarn" style="display:none"></div>
+      <div class="err" id="finErr"></div>
+      <div class="sheet-actions">
+        <button class="cancelbtn sheet-cancel">Cancel</button>
+        <button class="redbtn" id="finConfirm">Done</button>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="wrap history" id="historyView"><div class="top"><div class="brand">📚 История поездок</div><div class="status" onclick="showMain()" style="cursor:pointer">← Назад</div></div><section class="card"><div class="section-title"><h2 style="margin:0">Завершённые рейсы</h2><span id="historyCount" class="history-count">0</span></div><div id="historyList"></div></section></div>
-
-<div class="wrap detail" id="detailView"><button class="back" onclick="showHistory()">← История</button><section class="card"><div id="detailRoute" class="route"></div><div id="detailDate" class="meta"></div><div id="map" class="map"></div><div id="detailSummary" class="summary-grid"></div></section><section class="card"><h2>Автомобили в рейсе</h2><div id="detailCars"></div></section><section class="card"><h2>События рейса</h2><div id="detailEvents"></div></section></div>
-
-<div class="bottom"><div class="bottomin"><button id="startBtn" class="blue" onclick="showMain();showSheet('start')">▶️ Start</button><button onclick="showTrailer()">🚗 Trailer</button><button onclick="showStats()">📊 Stats</button><button onclick="showHistory()">📚 History</button><button class="red" onclick="showMain();finishTrip()">🏁 Finish</button></div></div>
+<div class="toast" id="toast"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
-const KEY='carhaul-tracker-v3', OLDKEY='carhaul-tracker-v2';let watchId=null,map=null,routeLayer=null,markerLayer=null;
-function blank(){return {id:'',active:false,from:'',to:'',startedAt:null,finishedAt:null,startOdo:0,lastOdo:0,gpsMiles:0,lastPoint:null,track:[],gallons:0,fuelCost:0,parkingCost:0,revenue:0,cars:[],events:[]}}
-function zeroStats(){return {miles:0,gallons:0,fuel:0,parking:0,revenue:0,cars:0}}
-function load(){let a=JSON.parse(localStorage.getItem(KEY)||'null');if(a&&a.current){a.statsBase=a.statsBase||zeroStats();return a}let old=JSON.parse(localStorage.getItem(OLDKEY)||'null');return {current:old||blank(),trips:[],statsBase:zeroStats(),statsResetAt:null}}
-let app=load();let st=app.current||blank();
-if(!st.active && (st.startedAt||st.finishedAt||(st.cars&&st.cars.length)||(st.events&&st.events.length)||Number(st.revenue||0)||Number(st.fuelCost||0)||Number(st.parkingCost||0))){
- st=blank();
- app.current=st;
- localStorage.setItem(KEY,JSON.stringify(app));
+'use strict';
+/* =====================================================================
+   CONFIG — Supabase sync (НЕОБЯЗАТЕЛЬНО)
+   Заполните SUPABASE_URL и SUPABASE_ANON_KEY данными своего проекта
+   Supabase — и приложение начнёт зеркалировать рейсы в облако через
+   REST API. Схема таблиц: файл supabase-schema.sql рядом.
+   Если поля пустые — приложение полностью работает офлайн на
+   localStorage, без ошибок и без сети.
+   ===================================================================== */
+const SUPABASE_URL = 'https://tixejlmvznywlzkgsfdv.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRpeGVqbG12em55d2x6a2dzZmR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUwMTc3NzYsImV4cCI6MjExMDU5Mzc3Nn0.WYDU3NCBkbtJfsJX4Cw8O-yqwdMrzXpbJMu9R6drjxg';
+
+const LS_KEY = 'carhaul_v2';
+const $ = id => document.getElementById(id);
+const uid = () => (window.crypto && crypto.randomUUID)
+  ? crypto.randomUUID()
+  : 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num = v => { const n = Number(v); return Number.isFinite(n) ? n : 0; };
+function money(n){ return '$' + Number(n || 0).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2}); }
+function moneyMi(n){ return '$' + Number(n || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+function fmtDate(ts){ try { return new Date(ts).toLocaleString('ru-RU', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'}); } catch (_) { return ''; } }
+
+const FUEL_LEVELS = [
+  {v: 0,   t: 'Пустой'},
+  {v: 25,  t: '¼ бака'},
+  {v: 50,  t: '½ бака'},
+  {v: 75,  t: '¾ бака'},
+  {v: 100, t: 'Полный'}
+];
+function fuelText(v){ const f = FUEL_LEVELS.find(x => x.v === Number(v)); return f ? f.t : (v == null ? '—' : v + '%'); }
+function fillFuelSelect(sel, def){
+  sel.innerHTML = FUEL_LEVELS.map(f => '<option value="' + f.v + '"' + (f.v === def ? ' selected' : '') + '>' + f.t + '</option>').join('');
 }
-const $=id=>document.getElementById(id);function persist(){app.current=st;localStorage.setItem(KEY,JSON.stringify(app))}function save(){persist();render()}
-function money(n){return '$'+Number(n||0).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:2})}
-function fmtDate(ms){return ms?new Date(ms).toLocaleString(undefined,{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}):'—'}
-function rad(x){return x*Math.PI/180}function distMi(a,b){const R=3958.7613,dLat=rad(b.lat-a.lat),dLon=rad(b.lon-a.lon);const q=Math.sin(dLat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.sqrt(q))}function odoMiles(x=st){return x.startOdo&&x.lastOdo?Math.max(0,x.lastOdo-x.startOdo):0}function basisMiles(x=st){return x.gpsMiles>0?x.gpsMiles:odoMiles(x)}
-const US_STATE={Alabama:'AL',Alaska:'AK',Arizona:'AZ',Arkansas:'AR',California:'CA',Colorado:'CO',Connecticut:'CT',Delaware:'DE',Florida:'FL',Georgia:'GA',Hawaii:'HI',Idaho:'ID',Illinois:'IL',Indiana:'IN',Iowa:'IA',Kansas:'KS',Kentucky:'KY',Louisiana:'LA',Maine:'ME',Maryland:'MD',Massachusetts:'MA',Michigan:'MI',Minnesota:'MN',Mississippi:'MS',Missouri:'MO',Montana:'MT',Nebraska:'NE',Nevada:'NV','New Hampshire':'NH','New Jersey':'NJ','New Mexico':'NM','New York':'NY','North Carolina':'NC','North Dakota':'ND',Ohio:'OH',Oklahoma:'OK',Oregon:'OR',Pennsylvania:'PA','Rhode Island':'RI','South Carolina':'SC','South Dakota':'SD',Tennessee:'TN',Texas:'TX',Utah:'UT',Vermont:'VT',Virginia:'VA',Washington:'WA','West Virginia':'WV',Wisconsin:'WI',Wyoming:'WY','District of Columbia':'DC'};
-async function placeFromPos(p){if(!p)return '';const lat=p.coords.latitude,lon=p.coords.longitude;try{const u=`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}&localityLanguage=en`;const r=await fetch(u);if(!r.ok)throw 0;const d=await r.json();const city=d.city||d.locality||d.principalSubdivision||'';const state=US_STATE[d.principalSubdivision]||d.principalSubdivisionCode?.split('-').pop()||d.principalSubdivision||'';return [city,state].filter(Boolean).join(', ')}catch(e){return ''}}
-function event(icon,title,p=null,odo='',extra={}){const e={icon,title,lat:p?.coords?.latitude??null,lon:p?.coords?.longitude??null,loc:'',odo,time:Date.now(),...extra};st.events.push(e);if(p)placeFromPos(p).then(loc=>{if(loc){e.loc=loc;if(extra.carId){const c=st.cars.find(x=>x.id===extra.carId);if(c){if(extra.kind==='pickup')c.pickupLoc=loc;if(extra.kind==='delivery')c.deliveryLoc=loc}}persist();render()}});return e}
-function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+
+/* ---------------- State ----------------
+   app = { current: trip|null, trips: [trip, ...], settings: { weekStart: 'mon'|'sun' } }
+   trip = { id, startedAt, finishedAt, startOdo, startFuel, endOdo, endFuel,
+            events: [event], cars: [car] }
+   event = { id, type:'start'|'pickup'|'drop'|'fuel'|'finish', ts, odo,
+             lat, lon, label, carId, amount, gallons }
+   car = { id, name, rate, pickupOdo, pickupLabel, pickupLat, pickupLon,
+           dropOdo, dropLabel, dropLat, dropLon, status:'onboard'|'delivered' }
+------------------------------------------ */
+let app = loadApp();
+function blankTrip(){ return { id: uid(), startedAt: null, finishedAt: null, startOdo: null, startFuel: null, endOdo: null, endFuel: null, events: [], cars: [] }; }
+function loadApp(){
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) { const a = JSON.parse(raw); if (a && typeof a === 'object') { a.trips = Array.isArray(a.trips) ? a.trips : []; a.current = a.current || null; a.settings = Object.assign({ weekStart: 'mon' }, a.settings || {}); return a; } }
+  } catch (_) {}
+  return { current: null, trips: [], settings: { weekStart: 'mon' } };
+}
+function persist(){ try { localStorage.setItem(LS_KEY, JSON.stringify(app)); } catch (_) {} }
+
+/* ---------------- Geolocation ----------------
+   Место НИКОГДА не вводится вручную: при открытии листа приложение
+   само снимает GPS-координаты. Никогда не блокирует интерфейс: при
+   отказе/таймауте позиция — null, и событие просто сохраняется без
+   места. Подпись места вычисляется автоматически обратным
+   геокодингом (Nominatim); если сеть недоступна, подписью служат
+   сами координаты. В листе — только строка статуса, не поле ввода. */
+const geoCache = {}; // formName -> {lat, lon, label}
+const GEO_STATUS_ID = { start: 'sGeo', pickup: 'pGeo', drop: 'dGeo', fuel: 'fGeo', finish: 'finGeo' };
+function getPos(timeoutMs){
+  return new Promise(resolve => {
+    if (!navigator.geolocation) return resolve(null);
+    let done = false;
+    const finish = v => { if (!done) { done = true; resolve(v); } };
+    const timer = setTimeout(() => finish(null), timeoutMs || 4000);
+    try {
+      navigator.geolocation.getCurrentPosition(
+        p => { clearTimeout(timer); finish({ lat: p.coords.latitude, lon: p.coords.longitude }); },
+        () => { clearTimeout(timer); finish(null); },
+        { enableHighAccuracy: false, timeout: timeoutMs || 4000, maximumAge: 60000 }
+      );
+    } catch (_) { clearTimeout(timer); finish(null); }
+  });
+}
+function coordsLabel(pos){ return pos.lat.toFixed(4) + ', ' + pos.lon.toFixed(4); }
+async function reverseLabel(pos){
+  try {
+    const r = await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + pos.lat + '&lon=' + pos.lon, { headers: { 'Accept': 'application/json' } });
+    if (r.ok) {
+      const j = await r.json();
+      const a = (j && j.address) || {};
+      const city = a.city || a.town || a.village || a.county || '';
+      const name = (city ? city : '') + (a.state ? (city ? ', ' : '') + a.state : '');
+      if (name) return name;
+    }
+  } catch (_) { /* офлайн — подписью останутся координаты */ }
+  return coordsLabel(pos);
+}
+function setGeoStatus(formName, txt){
+  const id = GEO_STATUS_ID[formName]; if (!id) return;
+  const el = $(id); if (el) el.textContent = txt;
+}
+async function captureGeo(formName){
+  geoCache[formName] = null;
+  setGeoStatus(formName, '📍 ищу локацию…');
+  const pos = await getPos(4000);
+  if (!pos) { setGeoStatus(formName, '📍 локация не определена — событие сохранится без места'); return; }
+  const g = { lat: pos.lat, lon: pos.lon, label: coordsLabel(pos) };
+  geoCache[formName] = g;
+  setGeoStatus(formName, '📍 локация определена');
+  const name = await reverseLabel(pos);
+  if (geoCache[formName] === g) { g.label = name; setGeoStatus(formName, '📍 ' + name); }
+}
+
+/* ---------------- Metrics ----------------
+   Мили машины = одометр выгрузки − одометр пикапа.
+   Пустые мили: идём по событиям по порядку; на каждом отрезке между
+   соседними одометрами смотрим, сколько машин было на борту ВО ВРЕМЯ
+   этого отрезка (т.е. после предыдущего события, до текущего).
+   Если 0 — отрезок пустой. $/миля — всегда на ВСЕ мили рейса. */
+function lastOdo(trip){
+  let m = trip && trip.startOdo != null ? trip.startOdo : 0;
+  (trip ? trip.events : []).forEach(e => { if (Number.isFinite(e.odo)) m = Math.max(m, e.odo); });
+  if (trip && trip.endOdo != null) m = Math.max(m, trip.endOdo);
+  return m;
+}
+function computeMetrics(trip){
+  const out = { miles: 0, emptyMiles: 0, revenue: 0, fuelCost: 0, gallons: 0, profit: 0,
+                revenueMi: 0, fuelMi: 0, profitMi: 0, onboard: 0, delivered: 0 };
+  if (!trip) return out;
+  out.revenue = trip.cars.reduce((s, c) => s + num(c.rate), 0);
+  out.delivered = trip.cars.filter(c => c.status === 'delivered').length;
+  let onboard = 0, prevOdo = null;
+  trip.events.forEach(e => {
+    if (e.type === 'fuel') { out.fuelCost += num(e.amount); out.gallons += num(e.gallons); }
+    if (Number.isFinite(e.odo)) {
+      if (prevOdo != null) {
+        const d = Math.max(0, e.odo - prevOdo);
+        out.miles += d;
+        if (onboard === 0) out.emptyMiles += d;
+      }
+      prevOdo = e.odo;
+    }
+    if (e.type === 'pickup') onboard++;
+    if (e.type === 'drop') onboard = Math.max(0, onboard - 1);
+  });
+  out.onboard = onboard;
+  out.profit = out.revenue - out.fuelCost;
+  if (out.miles > 0) {
+    out.revenueMi = out.revenue / out.miles;
+    out.fuelMi = out.fuelCost / out.miles;
+    out.profitMi = out.profit / out.miles;
+  }
+  return out;
+}
+function carMiles(car){ return (car.dropOdo != null && car.pickupOdo != null) ? Math.max(0, car.dropOdo - car.pickupOdo) : null; }
+function carPerMile(car){ const m = carMiles(car); return (m && m > 0) ? num(car.rate) / m : null; }
+
+/* ---------------- Toast ---------------- */
+let toastTimer = null;
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.style.display = 'block';
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.style.display = 'none'; }, 2600);
+}
+
+/* ---------------- Supabase sync (фон, необязательно) ----------------
+   Работает только если заполнены SUPABASE_URL и SUPABASE_ANON_KEY.
+   Зеркалирование: upsert рейса, затем полная замена его событий и
+   машин (delete + insert) — просто и консистентно для одного водителя.
+   Любые ошибки сети глотаются: localStorage остаётся источником правды. */
+function sbEnabled(){ return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY); }
+let sbTimer = null;
+function sbHeaders(){
+  return { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
+}
+function sbSyncSoon(){
+  if (!sbEnabled()) return;
+  setSyncLine('Supabase: синхронизация…');
+  clearTimeout(sbTimer);
+  sbTimer = setTimeout(() => { sbSyncAll().catch(() => setSyncLine('Supabase: нет связи, данные на устройстве')); }, 600);
+}
+async function sbSyncAll(){
+  if (!sbEnabled()) return;
+  const all = [];
+  if (app.current) all.push(app.current);
+  (app.trips || []).forEach(t => all.push(t));
+  for (const t of all) { await sbSyncTrip(t); }
+  setSyncLine('Supabase: синхронизировано ' + new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'}));
+}
+async function sbSyncTrip(trip){
+  const base = SUPABASE_URL.replace(/\/+$/, '') + '/rest/v1';
+  const tripRow = {
+    id: trip.id,
+    started_at: trip.startedAt ? new Date(trip.startedAt).toISOString() : null,
+    finished_at: trip.finishedAt ? new Date(trip.finishedAt).toISOString() : null,
+    start_odo: trip.startOdo, start_fuel: trip.startFuel,
+    end_odo: trip.endOdo, end_fuel: trip.endFuel,
+    updated_at: new Date().toISOString()
+  };
+  let r = await fetch(base + '/trips', { method: 'POST', headers: Object.assign(sbHeaders(), { 'Prefer': 'resolution=merge-duplicates' }), body: JSON.stringify(tripRow) });
+  if (!r.ok) throw new Error('trips upsert ' + r.status);
+  await fetch(base + '/trip_events?trip_id=eq.' + trip.id, { method: 'DELETE', headers: sbHeaders() });
+  await fetch(base + '/cars?trip_id=eq.' + trip.id, { method: 'DELETE', headers: sbHeaders() });
+  if (trip.events.length) {
+    const rows = trip.events.map(e => ({
+      id: e.id, trip_id: trip.id, type: e.type,
+      ts: new Date(e.ts).toISOString(), odo: Number.isFinite(e.odo) ? e.odo : null,
+      lat: e.lat, lon: e.lon, label: e.label || null,
+      car_id: e.carId || null, amount: e.amount != null ? e.amount : null,
+      gallons: e.gallons != null ? e.gallons : null
+    }));
+    r = await fetch(base + '/trip_events', { method: 'POST', headers: sbHeaders(), body: JSON.stringify(rows) });
+    if (!r.ok) throw new Error('events insert ' + r.status);
+  }
+  if (trip.cars.length) {
+    const rows = trip.cars.map(c => ({
+      id: c.id, trip_id: trip.id, name: c.name, rate: num(c.rate), status: c.status,
+      pickup_odo: c.pickupOdo, pickup_label: c.pickupLabel || null, pickup_lat: c.pickupLat, pickup_lon: c.pickupLon,
+      drop_odo: c.dropOdo, drop_label: c.dropLabel || null, drop_lat: c.dropLat, drop_lon: c.dropLon
+    }));
+    r = await fetch(base + '/cars', { method: 'POST', headers: sbHeaders(), body: JSON.stringify(rows) });
+    if (!r.ok) throw new Error('cars insert ' + r.status);
+  }
+}
+async function sbDeleteTrip(id){
+  if (!sbEnabled()) return;
+  try { await fetch(SUPABASE_URL.replace(/\/+$/, '') + '/rest/v1/trips?id=eq.' + id, { method: 'DELETE', headers: sbHeaders() }); } catch (_) {}
+}
+/* ---------------- Supabase: загрузка при старте ----------------
+   Чтобы на другом устройстве были видны те же данные, при старте
+   (если CONFIG заполнен) приложение ЗАГРУЖАЕТ рейсы из Supabase и
+   заменяет ими локальную копию в localStorage: сервер — источник
+   правды, когда он достижим. Рейс без finished_at становится
+   активным (app.current), остальные — историей (новые сверху).
+   Если сервер недостижим — работаем по локальной копии и пишем
+   вверх при появлении связи (sbSyncSoon). Если сервер пуст —
+   локальные данные НЕ затираются, а отправляются вверх. */
+async function sbGet(path){
+  const r = await fetch(SUPABASE_URL.replace(/\/+$/, '') + '/rest/v1' + path, { headers: sbHeaders() });
+  if (!r.ok) throw new Error('supabase get ' + r.status);
+  return r.json();
+}
+function sbRowToTrip(row, events, cars){
+  return {
+    id: row.id,
+    startedAt: row.started_at ? Date.parse(row.started_at) : null,
+    finishedAt: row.finished_at ? Date.parse(row.finished_at) : null,
+    startOdo: row.start_odo, startFuel: row.start_fuel,
+    endOdo: row.end_odo, endFuel: row.end_fuel,
+    events: events.filter(e => e.trip_id === row.id).map(e => ({
+      id: e.id, type: e.type, ts: Date.parse(e.ts),
+      odo: e.odo != null ? Number(e.odo) : null,
+      lat: e.lat != null ? Number(e.lat) : null,
+      lon: e.lon != null ? Number(e.lon) : null,
+      label: e.label || '', carId: e.car_id || null,
+      amount: e.amount != null ? Number(e.amount) : null,
+      gallons: e.gallons != null ? Number(e.gallons) : null
+    })),
+    cars: cars.filter(c => c.trip_id === row.id).map(c => ({
+      id: c.id, name: c.name, rate: num(c.rate), status: c.status,
+      pickupOdo: c.pickup_odo, pickupLabel: c.pickup_label || '', pickupLat: c.pickup_lat, pickupLon: c.pickup_lon,
+      dropOdo: c.drop_odo, dropLabel: c.drop_label || '', dropLat: c.drop_lat, dropLon: c.drop_lon
+    }))
+  };
+}
+async function sbLoadOnStart(){
+  if (!sbEnabled()) return false;
+  const rows = await sbGet('/trips?select=*');
+  if (!rows.length) {
+    // Сервер пуст: локальные данные не затираем, а отправляем вверх.
+    setSyncLine('Supabase: подключено');
+    sbSyncSoon();
+    return false;
+  }
+  const evRows = await sbGet('/trip_events?select=*&order=ts.asc');
+  const carRows = await sbGet('/cars?select=*');
+  const trips = rows.map(r => sbRowToTrip(r, evRows, carRows));
+  const currents = trips.filter(t => !t.finishedAt).sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0));
+  app.current = currents.length ? currents[0] : null;
+  app.trips = trips
+    .filter(t => t !== app.current)
+    .sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0))
+    .slice(0, 100);
+  dashSelMs = null;
+  persist();
+  render(); renderHistory(); renderDashboard();
+  setSyncLine('Supabase: загружено с сервера ' + new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'}));
+  return true;
+}
+function setSyncLine(txt){ const el = $('syncLine'); if (el) el.textContent = txt; }
+
+/* ---------------- Rendering ---------------- */
+const EV_META = {
+  start:  { icon: '▶', title: 'Старт рейса' },
+  pickup: { icon: '↑', title: 'Пикап' },
+  drop:   { icon: '↓', title: 'Выгрузка' },
+  fuel:   { icon: '', title: 'Заправка' },
+  finish: { icon: '🏁', title: 'Финиш рейса' }
+};
+function eventHtml(trip, e){
+  const meta = EV_META[e.type] || { icon: '•', title: e.type };
+  let title = meta.title, extra = '';
+  if ((e.type === 'pickup' || e.type === 'drop') && e.carId) {
+    const car = trip.cars.find(c => c.id === e.carId);
+    if (car) title += ': ' + car.name;
+  }
+  if (e.type === 'fuel') extra = ' · ' + money(e.amount) + (e.gallons ? ' · ' + e.gallons + ' гал' : '');
+  if (e.type === 'start') extra = ' · топливо: ' + fuelText(trip.startFuel);
+  if (e.type === 'finish') extra = ' · топливо: ' + fuelText(trip.endFuel);
+  return '<div class="event"><div class="evicon">' + meta.icon + '</div><div class="grow">' +
+    '<div class="name">' + esc(title) + '</div>' +
+    '<div class="meta">' + fmtDate(e.ts) + (Number.isFinite(e.odo) ? ' · одометр ' + Number(e.odo).toLocaleString('en-US') : '') + esc(extra) +
+    (e.label ? '<br>' + esc(e.label) : '') + '</div></div></div>';
+}
+function carHtml(car){
+  const m = carMiles(car), pm = carPerMile(car);
+  const route = esc(car.pickupLabel || '—') + ' → ' + esc(car.status === 'delivered' ? (car.dropLabel || '—') : '…');
+  const odoLine = 'Пикап: одометр ' + Number(car.pickupOdo).toLocaleString('en-US') +
+    (car.status === 'delivered' ? ' · Выгрузка: ' + Number(car.dropOdo).toLocaleString('en-US') + ' · ' + m + ' миль' : ' · на борту');
+  return '<div class="onboard-row"><div class="caricon">🚗</div><div class="grow">' +
+    '<div class="name">' + esc(car.name) + '</div>' +
+    '<div class="meta">' + route + '<br>' + odoLine + '</div></div>' +
+    '<div><div class="price">' + money(car.rate) + '</div>' +
+    (pm != null ? '<div class="permi">' + moneyMi(pm) + ' / миля</div>' : '') + '</div></div>';
+}
+function tripRouteText(t){
+  const fp = t.events.find(e => e.type === 'pickup');
+  const fin = t.events.filter(e => e.type === 'finish').pop();
+  const lastEv = t.events[t.events.length - 1];
+  const from = fp && fp.label ? fp.label : (t.events[0] && t.events[0].label ? t.events[0].label : 'Рейс');
+  const to = fin && fin.label ? fin.label : (lastEv && lastEv.label ? lastEv.label : '…');
+  return from + ' → ' + to;
+}
 function render(){
- $('status').textContent=st.active?'Активный рейс':'Нет рейса';$('status').className='status'+(st.active?' live':'');$('route').textContent=st.active?'Текущий рейс':(st.startedAt?'Последний рейс':'Начните рейс');$('trackDot').className='dot'+(st.active&&watchId!==null?' live':'');$('trackState').textContent=st.active?(watchId!==null?'GPS-трек активен':'GPS-трек ожидает разрешения'):'GPS-трек выключен';$('startBtn').textContent=st.active?'📍 Рейс активен':'▶️ Start Trip';$('gpsMiles').textContent=Number(st.gpsMiles||0).toFixed(1)+' mi';$('odoMiles').textContent=Math.round(odoMiles())+' mi';const mi=basisMiles(),totalCost=st.fuelCost+st.parkingCost,profit=st.revenue-totalCost;$('mpg').textContent=st.gallons>0&&mi>0?(mi/st.gallons).toFixed(2)+' MPG':'—';$('fuelMi').textContent=mi>0?money(st.fuelCost/mi):'$0.00';$('costMi').textContent=mi>0?money(totalCost/mi):'$0.00';$('revMi').textContent=mi>0?money(st.revenue/mi):'$0.00';$('revenue').textContent=money(st.revenue);$('profit').textContent=money(profit);$('profit').className=profit>=0?'good':'bad';
- const onboard=st.cars.filter(c=>c.status==='onboard'),delivered=st.cars.filter(c=>c.status==='delivered');$('onboardCount').textContent=onboard.length+' авто';$('onboard').innerHTML=(onboard.length?onboard.map(c=>`<div class="onboard-row"><div class="caricon">🚗</div><div class="grow"><div class="name">${esc(c.name)}</div><div class="meta">Trailer · Pickup: ${esc(c.pickupLoc||'GPS')}</div></div><div style="text-align:right"><div class="price">${money(c.price)}</div><button class="mini" onclick="editCar('${c.id}')">✏️ Edit</button><button class="mini danger" onclick="deleteLoad('${c.id}')">🗑️ Delete</button></div></div>`).join(''):'<div class="empty">Машин на трейлере нет</div>')+(delivered.length?`<div style="margin-top:14px;font-weight:800">Delivered</div>`+delivered.map(c=>`<div class="onboard-row"><div class="caricon">✅</div><div class="grow"><div class="name">${esc(c.name)}</div><div class="meta">Delivered${c.deliveryLoc?' · '+esc(c.deliveryLoc):''}${c.deliveryMiles!=null?' · '+Number(c.deliveryMiles).toFixed(0)+' mi':''}${c.grossPerMile!=null?' · Gross '+money(c.grossPerMile)+'/mi':''}</div></div><div style="text-align:right"><div class="price">${money(c.price)}</div><button class="mini undo" onclick="undoDelivery('${c.id}')">↩️ Undo Delivery</button></div></div>`).join(''):'');$('events').innerHTML=st.events.length?st.events.slice().reverse().map(e=>eventHtml(e)).join(''):'<div class="empty">Событий пока нет</div>';
- renderHistory();
+  const trip = app.current;
+  const active = Boolean(trip);
+  const m = computeMetrics(trip);
+  $('statusPill').textContent = active ? 'Рейс идёт' : 'Нет рейса';
+  $('statusPill').classList.toggle('live', active);
+  $('tripBadge').style.display = active ? 'inline-block' : 'none';
+  if (active) {
+    $('routeTitle').textContent = tripRouteText(trip);
+    $('routeSub').textContent = 'Старт: ' + fmtDate(trip.startedAt) + ' · одометр ' + Number(trip.startOdo).toLocaleString('en-US');
+    const lastEv = trip.events[trip.events.length - 1];
+    $('lastLoc').textContent = lastEv && lastEv.label ? '📍 ' + lastEv.label : '';
+  } else {
+    $('routeTitle').textContent = 'Новый рейс';
+    $('routeSub').textContent = 'Нажмите START, чтобы начать рейс';
+    $('lastLoc').textContent = '';
+  }
+  $('mGrossHero').textContent = moneyMi(m.revenueMi);
+  $('mHeroSub').textContent = 'всего ' + money(m.revenue) + ' · после топлива ' + moneyMi(m.profitMi) + '/миля';
+  const loadedMi = Math.max(0, m.miles - m.emptyMiles);
+  $('mbLoaded').style.width = m.miles > 0 ? (loadedMi / m.miles * 100) + '%' : '0%';
+  $('mbEmpty').style.width = m.miles > 0 ? (m.emptyMiles / m.miles * 100) + '%' : '0%';
+  $('mbLoadedTxt').textContent = Math.round(loadedMi).toLocaleString('en-US') + ' миль';
+  $('mbEmptyTxt').textContent = Math.round(m.emptyMiles).toLocaleString('en-US') + (m.miles > 0 ? ' (' + Math.round(m.emptyMiles / m.miles * 100) + '%)' : '');
+  $('mRevenue').textContent = money(m.revenue);
+  $('mFuel').textContent = money(m.fuelCost);
+  $('mFuelMi').textContent = moneyMi(m.fuelMi) + ' / миля';
+  $('mProfit').textContent = money(m.profit);
+  $('mProfit').className = m.profit < 0 ? 'bad' : '';
+  $('mProfitMi').textContent = moneyMi(m.profitMi) + ' / миля';
+  $('mMiles').textContent = Math.round(m.miles).toLocaleString('en-US');
+  $('mEmpty').textContent = Math.round(m.emptyMiles).toLocaleString('en-US');
+  $('mEmptyPct').textContent = m.miles > 0 ? Math.round(m.emptyMiles / m.miles * 100) + '% от рейса' : ' ';
+  $('mOnboard').textContent = m.onboard;
+  $('mDelivered').textContent = m.delivered ? 'выгружено: ' + m.delivered : ' ';
+  $('btnStart').disabled = active;
+  $('btnDrop').disabled = !active;
+  $('btnFuel').disabled = !active;
+  $('btnFinish').disabled = !active;
+  $('btnStart').classList.toggle('accent', !active);
+  $('btnPickup').classList.toggle('accent', active);
+  if (trip && trip.cars.length) {
+    const onboard = trip.cars.filter(c => c.status === 'onboard');
+    const delivered = trip.cars.filter(c => c.status === 'delivered');
+    let html = '';
+    onboard.forEach(c => { html += carHtml(c); });
+    delivered.forEach(c => { html += carHtml(c); });
+    $('carsList').innerHTML = html;
+  } else {
+    $('carsList').innerHTML = '<div class="empty">Машин пока нет. Нажмите PICKUP, чтобы добавить первую.</div>';
+  }
+  $('eventsList').innerHTML = (trip && trip.events.length)
+    ? trip.events.slice().reverse().map(e => eventHtml(trip, e)).join('')
+    : '<div class="empty">Событий пока нет</div>';
+  if (!sbEnabled()) setSyncLine('Данные хранятся на этом устройстве');
+  renderMap('current', 'map', 'mapCard', trip);
+  renderDropList();
 }
-function eventHtml(e){const t=typeof e.time==='number'?fmtDate(e.time):esc(e.time);let x=`${t}${e.loc?' · '+esc(e.loc):''}${e.odo?' · '+esc(String(e.odo))+' mi':''}`;if(e.kind==='delivery'&&Number.isFinite(Number(e.deliveryMiles))){x+=` · ${Number(e.deliveryMiles).toFixed(0)} loaded mi · ${money(e.price)} · Gross ${money(e.grossPerMile)}/mi`}return `<div class="event"><div class="evicon">${e.icon||'•'}</div><div class="grow"><div class="name">${esc(e.title)}</div><div class="meta">${x}</div></div></div>`}
-function showSheet(id){document.querySelectorAll('.sheet').forEach(x=>x.classList.remove('open'));$(id).classList.add('open')}function posText(p){return ''}
-function getPos(){return new Promise(resolve=>{if(!navigator.geolocation)return resolve(null);navigator.geolocation.getCurrentPosition(p=>resolve(p),()=>resolve(null),{enableHighAccuracy:true,timeout:10000,maximumAge:10000})})}
-function startWatch(){if(!navigator.geolocation||watchId!==null||!st.active)return;watchId=navigator.geolocation.watchPosition(p=>{const pt={lat:p.coords.latitude,lon:p.coords.longitude,t:p.timestamp,acc:p.coords.accuracy};$('location').textContent='📍 GPS активен · точность ±'+Math.round(pt.acc)+'m';if(st.lastPoint){const d=distMi(st.lastPoint,pt),dt=Math.max(1,(pt.t-st.lastPoint.t)/1000),mph=d/(dt/3600);if(d>=0.01&&mph<120)st.gpsMiles+=d}st.lastPoint=pt;st.track.push(pt);if(st.track.length>10000)st.track=st.track.slice(-10000);persist();render()},e=>{$('location').textContent='📍 GPS недоступен: '+e.message},{enableHighAccuracy:true,maximumAge:5000,timeout:15000})}
-function stopWatch(){if(watchId!==null&&navigator.geolocation){navigator.geolocation.clearWatch(watchId);watchId=null}}
-async function startTrip(){if(st.active)return alert('Рейс уже активен');const odo=Number($('sOdo').value);if(!odo)return alert('Введите стартовый одометр');st=blank();st.id=(crypto.randomUUID?crypto.randomUUID():String(Date.now()));st.active=true;st.startedAt=Date.now();st.startOdo=odo;st.lastOdo=odo;const p=await getPos();event('▶️','Рейс начат',p,odo,{kind:'start'});save();startWatch()}
-function showTrailer(){showMain();setTimeout(()=>document.getElementById('onboardSection')?.scrollIntoView({behavior:'smooth',block:'start'}),50)}
-function deleteCar(id){const car=st.cars.find(c=>c.id===id);if(!car)return;if(!confirm(`Удалить ${car.name} из текущего рейса?`))return;st.revenue=Math.max(0,Number(st.revenue||0)-Number(car.price||0));st.cars=st.cars.filter(c=>c.id!==id);st.events=st.events.filter(e=>!String(e.title||'').includes(car.name));save()}
-function editCar(id){const car=st.cars.find(c=>c.id===id);if(!car)return alert('Автомобиль не найден');const oldName=car.name,oldPrice=Number(car.price||0);const name=prompt('Название автомобиля:',car.name);if(name===null)return;const priceText=prompt('Цена перевозки $:',String(car.price||0));if(priceText===null)return;const odoText=prompt('Одометр на Pickup:',String(car.pickupOdo||''));if(odoText===null)return;const price=Number(priceText),odo=Number(odoText);if(!name.trim())return alert('Название не может быть пустым');if(!Number.isFinite(price)||price<0)return alert('Неверная цена');if(!Number.isFinite(odo)||odo<=0)return alert('Неверный одометр');car.name=name.trim();car.price=price;car.pickupOdo=odo;st.revenue=Math.max(0,Number(st.revenue||0)-oldPrice+price);const ev=st.events.find(e=>String(e.title||'').startsWith('Pickup: '+oldName));if(ev){ev.title=`Pickup: ${car.name}${price?' · '+money(price):''}`;ev.odo=odo}save();}
-
-function deleteLoad(id){
- const car=st.cars.find(c=>c.id===id);if(!car)return alert('Автомобиль не найден');
- if(car.status==='delivered')return alert('Сначала сделайте Undo Delivery');
- if(car.status!=='onboard')return alert('Эту загрузку сейчас удалить нельзя');
- if(!confirm(`Удалить загрузку ${car.name}?`))return;
- st.revenue=Math.max(0,Number(st.revenue||0)-Number(car.price||0));
- st.cars=st.cars.filter(c=>c.id!==id);
- st.events=st.events.filter(e=>!String(e.title||'').startsWith('Pickup: '+car.name));
- save();
+function tripCardHtml(t, clickable){
+  const m = computeMetrics(t);
+  return '<div class="trip-card' + (clickable ? ' clickable' : '') + '" data-trip="' + t.id + '"><div class="trip-head"><div class="trip-route">' + esc(tripRouteText(t)) + '</div>' +
+    '<div class="trip-date">' + fmtDate(t.finishedAt || t.startedAt) + '</div></div>' +
+    '<div class="trip-stats">' +
+    '<div class="trip-stat"><span>Мили</span><strong>' + Math.round(m.miles) + '</strong></div>' +
+    '<div class="trip-stat"><span>Пустые</span><strong>' + Math.round(m.emptyMiles) + '</strong></div>' +
+    '<div class="trip-stat"><span>Выручка</span><strong>' + money(m.revenue) + '</strong></div>' +
+    '<div class="trip-stat"><span>Топливо</span><strong>' + money(m.fuelCost) + '</strong></div>' +
+    '<div class="trip-stat"><span>После топлива</span><strong class="' + (m.profit >= 0 ? 'good' : 'bad') + '">' + money(m.profit) + '</strong></div>' +
+    '<div class="trip-stat"><span>$/миля</span><strong>' + moneyMi(m.revenueMi) + '</strong></div>' +
+    '</div>' +
+    '<div class="meta" style="margin-top:9px">Машин: ' + t.cars.length + ' · ' + t.cars.map(c => esc(c.name)).join(', ') + '</div></div>';
 }
-function undoDelivery(id){
- const car=st.cars.find(c=>c.id===id);if(!car)return alert('Автомобиль не найден');
- if(car.status!=='delivered')return alert('Эта машина не отмечена как Delivered');
- if(!confirm(`Отменить Delivery для ${car.name} и вернуть машину в Trailer?`))return;
- car.status='onboard';car.deliveryLoc='';car.deliveryOdo='';car.deliveryTime=null;car.deliveryMiles=null;car.grossPerMile=null;
- let idx=-1;for(let i=st.events.length-1;i>=0;i--){if((st.events[i].carId===id&&st.events[i].kind==='delivery')||String(st.events[i].title||'').startsWith('Delivery: '+car.name)){idx=i;break}}
- if(idx>=0)st.events.splice(idx,1);
- save();
-}
-async function pickup(){if(!st.active)return alert('Сначала нажмите Start Trip');const name=$('pCar').value.trim(),price=Number($('pPrice').value),odo=Number($('pOdo').value);if(!name||!odo)return alert('Введите автомобиль и одометр');const p=await getPos();const car={id:crypto.randomUUID?crypto.randomUUID():String(Date.now()),name,price:price||0,status:'onboard',pickupLoc:'',pickupOdo:odo,pickupTime:Date.now()};st.cars.push(car);st.revenue+=car.price;st.lastOdo=Math.max(st.lastOdo,odo);event('🚗',`Pickup: ${name}${price?' · '+money(price):''}`,p,odo,{kind:'pickup',carId:car.id});save();$('pCar').value='';$('pPrice').value='';$('pOdo').value=''}
-function showDelivery(){if(!st.active)return alert('Сначала нажмите Start Trip');const onboard=st.cars.filter(c=>c.status==='onboard');if(!onboard.length)return alert('На трейлере нет автомобилей');$('dCar').innerHTML=onboard.map(c=>`<option value="${c.id}">${esc(c.name)} — ${money(c.price)}</option>`).join('');showSheet('delivery')}
-async function deliver(){const id=$('dCar').value,odo=Number($('dOdo').value);if(!odo)return alert('Введите одометр');const car=st.cars.find(c=>c.id===id&&c.status==='onboard');if(!car)return alert('Автомобиль не найден');if(odo<Number(car.pickupOdo||0))return alert('Delivery odometer не может быть меньше Pickup odometer');const p=await getPos();const loadedMiles=Math.max(0,odo-Number(car.pickupOdo||0));const gross=loadedMiles>0?Number(car.price||0)/loadedMiles:0;car.status='delivered';car.deliveryLoc='';car.deliveryOdo=odo;car.deliveryTime=Date.now();car.deliveryMiles=loadedMiles;car.grossPerMile=gross;st.lastOdo=Math.max(st.lastOdo,odo);event('✅',`Delivery: ${car.name}`,p,odo,{kind:'delivery',carId:car.id,deliveryMiles:loadedMiles,price:Number(car.price||0),grossPerMile:gross});save();$('dOdo').value=''}
-async function fuel(){if(!st.active)return alert('Сначала нажмите Start Trip');const gal=Number($('fGal').value),cost=Number($('fCost').value),odo=Number($('fOdo').value);if(!gal||!cost||!odo)return alert('Введите gallons, сумму и одометр');st.gallons+=gal;st.fuelCost+=cost;st.lastOdo=Math.max(st.lastOdo,odo);const p=await getPos();event('⛽',`Fuel: ${gal.toFixed(2)} gal · ${money(cost)}`,p,odo,{kind:'fuel'});save();$('fGal').value='';$('fCost').value='';$('fOdo').value=''}
-async function parking(){if(!st.active)return alert('Сначала нажмите Start Trip');const cost=Number($('pkCost').value),note=$('pkNote').value.trim(),odo=Number($('pkOdo').value)||'';if(!cost)return alert('Введите стоимость парковки');st.parkingCost+=cost;if(odo)st.lastOdo=Math.max(st.lastOdo,odo);const p=await getPos();event('🅿️',`Parking: ${money(cost)}${note?' · '+note:''}`,p,odo,{kind:'parking'});save();$('pkCost').value='';$('pkNote').value='';$('pkOdo').value=''}
-async function finishTrip(){
- if(!st.active)return alert('Нет активного рейса');
- const val=prompt('Финальный одометр:',st.lastOdo||st.startOdo);if(val===null)return;
- const odo=Number(val);if(!odo||odo<st.startOdo)return alert('Неверный одометр');
- st.lastOdo=odo;
- const p=await getPos();
- event('🏁','Рейс завершён',p,odo,{kind:'finish'});
- st.active=false;
- st.finishedAt=Date.now();
- stopWatch();
-
- const archived=JSON.parse(JSON.stringify(st));
- app.trips.unshift(archived);
- if(app.trips.length>100)app.trips=app.trips.slice(0,100);
-
- st=blank();
- app.current=st;
- persist();
- render();
- alert('Рейс сохранён в History');
-}
-function tripMetrics(t){const mi=basisMiles(t),cost=(t.fuelCost||0)+(t.parkingCost||0),profit=(t.revenue||0)-cost;return {mi,cost,profit,mpg:t.gallons&&mi?mi/t.gallons:0}}
-function renderHistory(){const trips=app.trips||[];$('historyCount').textContent=trips.length+' рейсов';$('historyList').innerHTML=trips.length?trips.map((t,i)=>{const m=tripMetrics(t);return `<div class="trip-card"><div onclick="openTrip(${i})"><div class="trip-head"><div class="trip-route">Рейс ${i+1}</div><div class="trip-date">${esc(new Date(t.finishedAt||t.startedAt||Date.now()).toLocaleDateString())}</div></div><div class="trip-stats"><div class="trip-stat"><span>Miles</span><strong>${m.mi.toFixed(0)}</strong></div><div class="trip-stat"><span>Revenue</span><strong>${money(t.revenue)}</strong></div><div class="trip-stat"><span>Profit</span><strong class="${m.profit>=0?'good':'bad'}">${money(m.profit)}</strong></div><div class="trip-stat"><span>Fuel</span><strong>${money(t.fuelCost)}</strong></div><div class="trip-stat"><span>MPG</span><strong>${m.mpg?m.mpg.toFixed(1):'—'}</strong></div><div class="trip-stat"><span>Cars</span><strong>${t.cars?.length||0}</strong></div></div></div><button class="red" style="width:100%;margin-top:10px;padding:9px" onclick="deleteTrip(${i})">🗑️ Удалить рейс</button></div>`}).join(''):'<div class="empty">Завершённых рейсов пока нет</div>'}
-function deleteTrip(i){
- const t=app.trips[i];if(!t)return;
- if(!confirm('Удалить этот рейс? Все его данные также исчезнут из общей статистики.'))return;
- app.trips.splice(i,1);
- if(!st.active){
-   st=blank();
-   app.current=st;
- }
- persist();
- renderHistory();
- render();
-}
-
-
-function rawOverallMetrics(){
- const all=[...(app.trips||[])];if(st.active)all.push(st);let miles=0,gallons=0,fuel=0,parking=0,revenue=0,cars=0;
- all.forEach(t=>{miles+=basisMiles(t);gallons+=Number(t.gallons||0);fuel+=Number(t.fuelCost||0);parking+=Number(t.parkingCost||0);revenue+=Number(t.revenue||0);cars+=(t.cars||[]).length});return {miles,gallons,fuel,parking,revenue,cars};
-}
-function overallMetrics(){
- const r=rawOverallMetrics(),miles=r.miles,gallons=r.gallons,fuel=r.fuel,parking=r.parking,revenue=r.revenue,cars=r.cars;
- const mpg=gallons?miles/gallons:0,fuelPerMi=miles?fuel/miles:0,expenses=fuel+parking,profit=revenue-expenses;
- return {miles,gallons,fuel,parking,revenue,cars,mpg,fuelPerMi,expenses,profit}
-}
-function renderStats(){
- const m=overallMetrics();
- $('overallStats').innerHTML=`<div class="summary-item"><span>Total miles</span><strong>${m.miles.toFixed(1)}</strong></div><div class="summary-item"><span>Total gallons</span><strong>${m.gallons.toFixed(1)}</strong></div><div class="summary-item"><span>Total fuel</span><strong>${money(m.fuel)}</strong></div><div class="summary-item"><span>Average MPG</span><strong>${m.mpg?m.mpg.toFixed(2):'—'}</strong></div><div class="summary-item"><span>Fuel / mile</span><strong>${m.miles?money(m.fuelPerMi):'$0.00'}</strong></div><div class="summary-item"><span>Total revenue</span><strong>${money(m.revenue)}</strong></div><div class="summary-item"><span>Total expenses</span><strong>${money(m.expenses)}</strong></div><div class="summary-item"><span>Total profit</span><strong class="${m.profit>=0?'good':'bad'}">${money(m.profit)}</strong></div><div class="summary-item"><span>Cars hauled</span><strong>${m.cars}</strong></div>`;
-}
-function showStats(){$('mainView').style.display='none';$('historyView').classList.remove('open');$('detailView').classList.remove('open');$('statsView').classList.add('open');renderStats();window.scrollTo(0,0)}
-function showMain(){$('mainView').style.display='block';$('historyView').classList.remove('open');$('detailView').classList.remove('open');$('statsView').classList.remove('open')}function showHistory(){$('mainView').style.display='none';$('detailView').classList.remove('open');$('statsView').classList.remove('open');$('historyView').classList.add('open');renderHistory();window.scrollTo(0,0)}
-function eventCoords(e){if(Number.isFinite(e.lat)&&Number.isFinite(e.lon))return [e.lat,e.lon];return null}
-function openTrip(i){const t=app.trips[i];if(!t)return;$('historyView').classList.remove('open');$('detailView').classList.add('open');$('detailRoute').textContent='Trip details';$('detailDate').textContent=`${fmtDate(t.startedAt)} → ${fmtDate(t.finishedAt)}`;const m=tripMetrics(t);$('detailSummary').innerHTML=`<div class="summary-item"><span>GPS miles</span><strong>${Number(t.gpsMiles||0).toFixed(1)}</strong></div><div class="summary-item"><span>Odometer miles</span><strong>${odoMiles(t).toFixed(0)}</strong></div><div class="summary-item"><span>Revenue</span><strong>${money(t.revenue)}</strong></div><div class="summary-item"><span>Profit</span><strong class="${m.profit>=0?'good':'bad'}">${money(m.profit)}</strong></div><div class="summary-item"><span>Fuel</span><strong>${money(t.fuelCost)}</strong></div><div class="summary-item"><span>Parking</span><strong>${money(t.parkingCost)}</strong></div><div class="summary-item"><span>MPG</span><strong>${m.mpg?m.mpg.toFixed(2):'—'}</strong></div><div class="summary-item"><span>Revenue / mi</span><strong>${m.mi?money((t.revenue||0)/m.mi):'$0.00'}</strong></div>`;$('detailCars').innerHTML=(t.cars||[]).length?(t.cars||[]).map(c=>`<div class="onboard-row"><div class="caricon">🚗</div><div class="grow"><div class="name">${esc(c.name)}</div><div class="meta">${c.status==='delivered'?'Delivered':'On board'}${c.deliveryLoc?' · '+esc(c.deliveryLoc):''}${c.deliveryMiles!=null?' · '+Number(c.deliveryMiles).toFixed(0)+' mi':''}${c.grossPerMile!=null?' · Gross '+money(c.grossPerMile)+'/mi':''}</div></div><div class="price">${money(c.price)}</div></div>`).join(''):'<div class="empty">Автомобилей нет</div>';$('detailEvents').innerHTML=(t.events||[]).map(e=>eventHtml(e)).join('')||'<div class="empty">Событий нет</div>';window.scrollTo(0,0);setTimeout(()=>drawMap(t),50)}
-function drawMap(t){if(typeof L==='undefined'){$('map').innerHTML='<div class="empty">Карта не загрузилась. Проверьте интернет.</div>';return}if(map){map.remove();map=null}map=L.map('map',{zoomControl:true});L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);const pts=(t.track||[]).filter(p=>Number.isFinite(p.lat)&&Number.isFinite(p.lon)).map(p=>[p.lat,p.lon]);if(pts.length>1){routeLayer=L.polyline(pts,{weight:5}).addTo(map);map.fitBounds(routeLayer.getBounds(),{padding:[20,20]})}else{const ecs=(t.events||[]).map(eventCoords).filter(Boolean);if(ecs.length){map.fitBounds(ecs,{padding:[25,25]})}else map.setView([27.95,-82.46],7)}markerLayer=L.layerGroup().addTo(map);(t.events||[]).forEach(e=>{const c=eventCoords(e);if(c)L.marker(c).addTo(markerLayer).bindPopup(`<b>${esc(e.icon||'')} ${esc(e.title||'')}</b><br>${typeof e.time==='number'?esc(fmtDate(e.time)):esc(e.time||'')}${e.loc?'<br>'+esc(e.loc):''}`)})}
-
-function setupSmartKeyboard(){
-  const flows = [
-    ['pCar','pPrice','pOdo'],
-    ['dOdo'],
-    ['fGal','fCost','fOdo'],
-    ['pkCost','pkNote','pkOdo'],
-    ['sOdo']
-  ];
-
-  flows.forEach(flow=>{
-    flow.forEach((id,i)=>{
-      const el=$(id);
-      if(!el) return;
-
-      const isLast = i === flow.length-1;
-      el.setAttribute('enterkeyhint', isLast ? 'done' : 'next');
-
-      el.addEventListener('keydown', e=>{
-        if(e.key !== 'Enter') return;
-        e.preventDefault();
-
-        if(!isLast){
-          const next=$(flow[i+1]);
-          if(next){
-            next.focus();
-            try{ next.select(); }catch(_){}
-          }
-        }else{
-          el.blur(); // closes the keyboard; does NOT submit the action automatically
-        }
-      });
+function bindTripCards(container){
+  container.querySelectorAll('[data-trip]').forEach(card => {
+    card.addEventListener('click', ev => {
+      if (ev.target && ev.target.closest && ev.target.closest('[data-del]')) return;
+      openTripDetail(card.getAttribute('data-trip'));
     });
   });
 }
-setupSmartKeyboard();
-
-render();if(st.active)startWatch();
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{});
+function deleteTripById(id){
+  const i = app.trips.findIndex(t => t.id === id);
+  if (i < 0) return;
+  const t = app.trips[i];
+  if (!confirm('Удалить этот рейс из истории?')) return;
+  app.trips.splice(i, 1); persist(); sbDeleteTrip(t.id);
+  renderHistory(); renderDashboard(); toast('Рейс удалён');
+}
+function renderHistory(){
+  const trips = app.trips || [];
+  $('historyCount').textContent = trips.length + ' рейсов';
+  $('historyList').innerHTML = trips.length ? trips.map(t => tripCardHtml(t, true)).join('') : '<div class="empty">Завершённых рейсов пока нет</div>';
+  // Кнопка удаления добавляется отдельной строкой под каждой карточкой
+  if (trips.length) {
+    const cards = $('historyList').querySelectorAll('[data-trip]');
+    cards.forEach((card, i) => {
+      const b = document.createElement('button');
+      b.className = 'redbtn'; b.setAttribute('data-del', trips[i].id);
+      b.style.cssText = 'margin:-4px 0 12px;padding:10px';
+      b.textContent = '🗑 Delete';
+      b.addEventListener('click', () => deleteTripById(trips[i].id));
+      card.after(b);
+    });
+  }
+  bindTripCards($('historyList'));
 }
 
+/* ---------------- Карты (текущий рейс и рейс из истории) ----------------
+   Один и тот же код для обеих карт: маркер на каждое событие с
+   координатами, линия по маршруту в хронологическом порядке.
+   Нет координат или нет Leaflet — карточка карты просто скрыта. */
+const mapStates = {};
+function tripMapPoints(trip){
+  if (!trip) return [];
+  return trip.events
+    .filter(e => Number.isFinite(e.lat) && Number.isFinite(e.lon))
+    .slice()
+    .sort((a, b) => a.ts - b.ts);
+}
+function renderMap(stateKey, elId, cardId, trip){
+  const pts = tripMapPoints(trip);
+  const card = $(cardId);
+  if (!pts.length || typeof L === 'undefined') { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  try {
+    let st = mapStates[stateKey];
+    if (!st) {
+      st = mapStates[stateKey] = { map: L.map(elId), layer: null };
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(st.map);
+    }
+    if (st.layer) st.layer.remove();
+    st.layer = L.layerGroup().addTo(st.map);
+    const latlngs = pts.map(e => [e.lat, e.lon]);
+    if (latlngs.length > 1) L.polyline(latlngs, { weight: 4, color: '#B8E62E' }).addTo(st.layer);
+    pts.forEach(e => { const meta = EV_META[e.type] || {}; L.marker([e.lat, e.lon]).addTo(st.layer).bindPopup('<b>' + esc(meta.title || e.type) + '</b><br>' + esc(e.label || '') + '<br>' + fmtDate(e.ts)); });
+    st.map.fitBounds(latlngs, { padding: [20, 20] });
+    setTimeout(() => { try { st.map.invalidateSize(); } catch (_) {} }, 60);
+  } catch (_) { card.style.display = 'none'; }
+}
+
+/* ---------------- Дашборд: недели и аналитика ----------------
+   Неделя: понедельник–воскресенье по умолчанию, переключатель
+   «Неделя с: Пн / Вс» сохраняется в настройках и перестраивает всё.
+   Рейс относится к неделе своего старта (рейсы владельца целиком
+   внутри одной недели). Считаются только завершённые рейсы. */
+const MONTHS_SHORT = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+function dashMode(){ return (app.settings && app.settings.weekStart === 'sun') ? 'sun' : 'mon'; }
+function weekStartOf(when, mode){
+  const d = new Date(when); d.setHours(0, 0, 0, 0);
+  const dow = d.getDay();
+  const diff = (mode === 'sun') ? dow : (dow + 6) % 7;
+  d.setDate(d.getDate() - diff);
+  return d;
+}
+function addDays(d, n){ const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+function weekLabel(ws){
+  const we = addDays(ws, 6);
+  if (ws.getMonth() === we.getMonth()) return ws.getDate() + '–' + we.getDate() + ' ' + MONTHS_SHORT[ws.getMonth()];
+  return ws.getDate() + ' ' + MONTHS_SHORT[ws.getMonth()] + ' – ' + we.getDate() + ' ' + MONTHS_SHORT[we.getMonth()];
+}
+function aggregateWeek(wsMs, mode){
+  const out = { trips: [], revenue: 0, miles: 0, emptyMiles: 0, fuelCost: 0, profit: 0,
+                grossMi: 0, fuelMi: 0, profitMi: 0, cars: 0,
+                gallons: 0, galCost: 0, pricePerGal: null, mpg: null, fuelMin: null, fuelMax: null };
+  app.trips.forEach(t => {
+    if (t.startedAt != null && weekStartOf(t.startedAt, mode).getTime() === wsMs) out.trips.push(t);
+  });
+  out.trips.forEach(t => {
+    const m = computeMetrics(t);
+    out.revenue += m.revenue; out.miles += m.miles; out.emptyMiles += m.emptyMiles;
+    out.fuelCost += m.fuelCost; out.cars += t.cars.length;
+    if (m.miles > 0) {
+      const item = { mi: m.fuelCost / m.miles, route: tripRouteText(t) };
+      if (!out.fuelMin || item.mi < out.fuelMin.mi) out.fuelMin = item;
+      if (!out.fuelMax || item.mi > out.fuelMax.mi) out.fuelMax = item;
+    }
+    t.events.forEach(e => {
+      if (e.type === 'fuel' && num(e.gallons) > 0) { out.gallons += num(e.gallons); out.galCost += num(e.amount); }
+    });
+  });
+  out.profit = out.revenue - out.fuelCost;
+  if (out.miles > 0) {
+    out.grossMi = out.revenue / out.miles;
+    out.fuelMi = out.fuelCost / out.miles;
+    out.profitMi = out.profit / out.miles;
+  }
+  if (out.gallons > 0) { out.pricePerGal = out.galCost / out.gallons; out.mpg = out.miles / out.gallons; }
+  return out;
+}
+let dashSelMs = null;
+function dashSelectedStart(){
+  const mode = dashMode();
+  if (dashSelMs == null) dashSelMs = weekStartOf(new Date(), mode).getTime();
+  return new Date(dashSelMs);
+}
+function deltaHtml(cur, prev, suffix){
+  if (!(prev > 0)) return '<span class="delta">—</span>';
+  const pct = (cur - prev) / prev * 100;
+  const up = pct >= 0;
+  return '<span class="delta ' + (up ? 'up' : 'down') + '">' + (up ? '▲' : '▼') + ' ' + Math.abs(pct).toFixed(0) + '%' + (suffix || '') + '</span>';
+}
+function renderDashboard(){
+  const mode = dashMode();
+  $('dashModeMon').classList.toggle('active', mode === 'mon');
+  $('dashModeSun').classList.toggle('active', mode === 'sun');
+  const sel = dashSelectedStart();
+  const selMs = sel.getTime();
+  const agg = aggregateWeek(selMs, mode);
+  const prev = aggregateWeek(addDays(sel, -7).getTime(), mode);
+  $('dashWeekLabel').textContent = weekLabel(sel);
+  $('dashWeekSub').textContent = agg.trips.length ? 'рейсов: ' + agg.trips.length : 'нет завершённых рейсов';
+  $('dGross').textContent = moneyMi(agg.grossMi);
+  $('dGrossSub').textContent = 'выручка ' + money(agg.revenue) + ' · ' + Math.round(agg.miles).toLocaleString('en-US') + ' миль';
+  $('dRev').textContent = money(agg.revenue);
+  $('dMiles').textContent = Math.round(agg.miles).toLocaleString('en-US');
+  $('dFuel').textContent = money(agg.fuelCost);
+  $('dFuelMi').textContent = moneyMi(agg.fuelMi) + ' / миля';
+  $('dProfit').textContent = money(agg.profit);
+  $('dProfit').className = agg.profit < 0 ? 'bad' : '';
+  $('dProfitMi').textContent = moneyMi(agg.profitMi) + ' / миля';
+  $('dEmpty').textContent = Math.round(agg.emptyMiles).toLocaleString('en-US');
+  $('dEmptyPct').textContent = agg.miles > 0 ? Math.round(agg.emptyMiles / agg.miles * 100) + '% от недели' : ' ';
+  $('dTrips').textContent = agg.trips.length + ' · ' + agg.cars;
+  $('dCompare').innerHTML = 'К прошлой неделе · выручка: ' + deltaHtml(agg.revenue, prev.revenue) +
+    ' · грязная миля: ' + deltaHtml(agg.grossMi, prev.grossMi);
+  // График: выручка за 6 недель, последняя — выбранная
+  const starts = [];
+  for (let i = 5; i >= 0; i--) starts.push(addDays(sel, -7 * i));
+  const revs = starts.map(s => aggregateWeek(s.getTime(), mode).revenue);
+  const maxRev = Math.max.apply(null, revs.concat([1]));
+  $('dChart').innerHTML = starts.map((s, i) =>
+    '<div class="bar-col"><div class="bar-val">' + (revs[i] ? money(revs[i]) : '') + '</div>' +
+    '<div class="bar' + (i === 5 ? ' sel' : '') + '" style="height:' + Math.max(4, Math.round(revs[i] / maxRev * 70)) + 'px"></div>' +
+    '<div class="bar-lab">' + weekLabel(s) + '</div></div>').join('');
+  // Топливо недели
+  $('fAvg').textContent = agg.miles > 0 ? moneyMi(agg.fuelMi) : '—';
+  $('fMin').textContent = agg.fuelMin ? moneyMi(agg.fuelMin.mi) : '—';
+  $('fMinRoute').textContent = agg.fuelMin ? agg.fuelMin.route : ' ';
+  $('fMax').textContent = agg.fuelMax ? moneyMi(agg.fuelMax.mi) : '—';
+  $('fMaxRoute').textContent = agg.fuelMax ? agg.fuelMax.route : ' ';
+  $('fGal').textContent = agg.gallons > 0 ? agg.gallons.toLocaleString('en-US') : '—';
+  $('fPrice').textContent = agg.pricePerGal != null ? moneyMi(agg.pricePerGal) : '—';
+  $('fMpg').textContent = agg.mpg != null ? agg.mpg.toFixed(1) : '—';
+  $('fNote').style.display = agg.gallons > 0 ? 'none' : 'block';
+  // История, сгруппированная по неделям
+  const groups = {};
+  app.trips.forEach(t => {
+    if (t.startedAt == null) return;
+    const ws = weekStartOf(t.startedAt, mode).getTime();
+    (groups[ws] = groups[ws] || []).push(t);
+  });
+  const keys = Object.keys(groups).map(Number).sort((a, b) => b - a);
+  $('dHistory').innerHTML = keys.length ? keys.map(wsMs => {
+    const g = aggregateWeek(wsMs, mode);
+    const tripsSorted = groups[wsMs].slice().sort((a, b) => b.startedAt - a.startedAt);
+    return '<div class="weekhead"><div class="wt">' + weekLabel(new Date(wsMs)) + '</div>' +
+      '<div class="wv">итого <b>' + money(g.revenue) + '</b> · грязная <b>' + moneyMi(g.grossMi) + '</b></div></div>' +
+      tripsSorted.map(t => tripCardHtml(t, true)).join('');
+  }).join('') : '<div class="empty">Завершённых рейсов пока нет</div>';
+  bindTripCards($('dHistory'));
+}
+
+/* ---------------- Детали рейса из истории ---------------- */
+let detailTripId = null;
+function openTripDetail(id){
+  const t = app.trips.find(x => x.id === id);
+  if (!t) return;
+  detailTripId = id;
+  const m = computeMetrics(t);
+  const carsSorted = t.cars.filter(c => c.status === 'onboard').concat(t.cars.filter(c => c.status === 'delivered'));
+  $('detailContent').innerHTML =
+    '<div class="card"><div class="route">' + esc(tripRouteText(t)) + '</div>' +
+    '<div class="sub">Старт: ' + fmtDate(t.startedAt) + ' · Финиш: ' + fmtDate(t.finishedAt) + '</div>' +
+    '<div class="grid">' +
+    '<div class="metric"><span>Мили</span><strong>' + Math.round(m.miles) + '</strong><div class="per">&nbsp;</div></div>' +
+    '<div class="metric"><span>Пустые мили</span><strong>' + Math.round(m.emptyMiles) + '</strong><div class="per amber">' + (m.miles > 0 ? Math.round(m.emptyMiles / m.miles * 100) + '% от рейса' : '&nbsp;') + '</div></div>' +
+    '<div class="metric"><span>Выручка</span><strong>' + money(m.revenue) + '</strong><div class="per">' + moneyMi(m.revenueMi) + ' / миля</div></div>' +
+    '<div class="metric"><span>Топливо</span><strong>' + money(m.fuelCost) + '</strong><div class="per amber">' + moneyMi(m.fuelMi) + ' / миля</div></div>' +
+    '<div class="metric"><span>После топлива</span><strong class="' + (m.profit >= 0 ? 'good' : 'bad') + '">' + money(m.profit) + '</strong><div class="per">' + moneyMi(m.profitMi) + ' / миля</div></div>' +
+    '<div class="metric"><span>Машин</span><strong>' + t.cars.length + '</strong><div class="per">&nbsp;</div></div>' +
+    '</div></div>' +
+    '<div class="card"><h2>Машины</h2>' +
+    (carsSorted.length ? carsSorted.map(carHtml).join('') : '<div class="empty">Машин нет</div>') + '</div>' +
+    '<div class="card"><h2>События</h2>' +
+    (t.events.length ? t.events.slice().reverse().map(e => eventHtml(t, e)).join('') : '<div class="empty">Событий нет</div>') +
+    '<button class="redbtn" id="detailDelete" style="margin-top:12px;padding:11px">🗑 Delete</button></div>';
+  $('detailDelete').addEventListener('click', () => { deleteTripById(id); showView('history'); });
+  showView('detail');
+  renderMap('detail', 'detailMap', 'detailMapCard', t);
+}
+
+/* ---------------- Экспорт / импорт данных ----------------
+   Гарантия сохранности: все данные приложения (активный рейс +
+   история + настройки) одним JSON-файлом. Импорт читает такой же
+   файл и восстанавливает данные целиком. Ключ localStorage и
+   модель данных при этом не меняются. */
+function buildExportPayload(){
+  return { app: 'carhaul', version: 2, exportedAt: new Date().toISOString(), data: app };
+}
+function exportData(){
+  const name = 'carhaul-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+  const blob = new Blob([JSON.stringify(buildExportPayload(), null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  toast('Файл с данными сохранён');
+}
+function parseImport(text){
+  let parsed;
+  try { parsed = JSON.parse(text); } catch (_) { return null; }
+  const cand = parsed && parsed.data ? parsed.data : parsed;
+  if (!cand || !Array.isArray(cand.trips)) return null;
+  return {
+    current: cand.current || null,
+    trips: cand.trips,
+    settings: Object.assign({ weekStart: 'mon' }, cand.settings || {})
+  };
+}
+function importDataFromFile(file){
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const restored = parseImport(String(reader.result || ''));
+    if (!restored) { toast('Не удалось прочитать файл импорта'); return; }
+    if (!confirm('Импорт заменит ВСЕ текущие данные (активный рейс и историю) данными из файла. Продолжить?')) return;
+    app = restored;
+    dashSelMs = null;
+    persist(); sbSyncSoon();
+    render(); renderHistory(); renderDashboard();
+    toast('Данные импортированы');
+  };
+  reader.readAsText(file);
+}
+
+/* ---------------- Bottom sheet (модальный ввод) ----------------
+   На главном экране форм нет: каждое действие мгновенно открывает
+   нижний модальный лист только со своими полями, большой кнопкой
+   «Готово» и закрытием (крестик, «Отмена», нажатие по фону, Esc).
+   Геолокация снимается при открытии листа и ничего не блокирует.
+   Отмена ничего не сохраняет; «Готово» вызывает соответствующий
+   confirm*, который при успехе закрывает лист через closeSheet(). */
+const SHEETS = { start: 'sheetStart', pickup: 'sheetPickup', drop: 'sheetDrop', fuel: 'sheetFuel', finish: 'sheetFinish' };
+const SHEET_TITLES = { start: 'START', pickup: 'PICKUP', drop: 'DROP', fuel: 'FUEL', finish: 'FINISH' };
+let openSheetName = null;
+let selectedDropCarId = null;
+function closeSheet(){
+  $('sheetOverlay').classList.remove('open');
+  Object.values(SHEETS).forEach(id => $(id).classList.remove('open'));
+  document.body.classList.remove('locked');
+  openSheetName = null;
+}
+function showErr(id, msg){ const el = $(id); if (msg) { el.textContent = msg; el.style.display = 'block'; } else { el.textContent = ''; el.style.display = 'none'; } }
+function focusSoon(el){ setTimeout(() => { try { el.focus(); } catch (_) {} }, 130); }
+function suggestedOdo(){
+  const t = app.current;
+  if (t) return lastOdo(t);
+  if (app.trips.length && app.trips[0].endOdo != null) return app.trips[0].endOdo;
+  return '';
+}
+function openSheet(name){
+  openSheetName = name;
+  $('sheetTitle').textContent = SHEET_TITLES[name];
+  Object.keys(SHEETS).forEach(k => $(SHEETS[k]).classList.toggle('open', k === name));
+  $('sheetOverlay').classList.add('open');
+  document.body.classList.add('locked');
+  if (name === 'start') { $('sOdo').value = suggestedOdo(); showErr('sErr', ''); captureGeo('start'); focusSoon($('sOdo')); }
+  if (name === 'pickup') {
+    const active = Boolean(app.current);
+    $('pAutoStart').style.display = active ? 'none' : 'block';
+    $('pFuelRow').style.display = active ? 'none' : 'block';
+    $('pOdo').value = suggestedOdo(); showErr('pErr', '');
+    captureGeo('pickup'); focusSoon($('pCar'));
+  }
+  if (name === 'drop') { selectedDropCarId = null; $('dFields').style.display = 'none'; $('dList').style.display = 'block'; $('dCancelList').style.display = 'block'; renderDropList(); }
+  if (name === 'fuel') { $('fOdo').value = suggestedOdo(); showErr('fErr', ''); captureGeo('fuel'); focusSoon($('fCost')); }
+  if (name === 'finish') {
+    $('finOdo').value = suggestedOdo(); showErr('finErr', '');
+    const t = app.current;
+    const onb = t ? t.cars.filter(c => c.status === 'onboard') : [];
+    if (onb.length) { $('finWarn').style.display = 'block'; $('finWarn').textContent = 'На борту ещё ' + onb.length + ' машин(ы): ' + onb.map(c => c.name).join(', ') + '. Финиш всё равно закроет рейс.'; }
+    else $('finWarn').style.display = 'none';
+    captureGeo('finish'); focusSoon($('finOdo'));
+  }
+}
+function renderDropList(){
+  const list = $('dList'); if (!list) return;
+  const t = app.current;
+  const onboard = t ? t.cars.filter(c => c.status === 'onboard') : [];
+  $('dEmpty').style.display = onboard.length ? 'none' : 'block';
+  list.innerHTML = onboard.map(c =>
+    '<div class="onboard-row"><div class="caricon">🚗</div><div class="grow"><div class="name">' + esc(c.name) + '</div>' +
+    '<div class="meta">' + (c.pickupLabel ? esc(c.pickupLabel) + ' · ' : '') + 'пикап: одометр ' + Number(c.pickupOdo).toLocaleString('en-US') + '</div></div>' +
+    '<button class="amberbtn dropbtn" data-drop="' + c.id + '">Drop</button></div>').join('');
+  list.querySelectorAll('[data-drop]').forEach(b => {
+    b.addEventListener('click', () => {
+      selectedDropCarId = b.getAttribute('data-drop');
+      $('dOdo').value = suggestedOdo(); showErr('dErr', '');
+      $('dList').style.display = 'none'; $('dEmpty').style.display = 'none'; $('dCancelList').style.display = 'none';
+      $('dFields').style.display = 'block';
+      captureGeo('drop'); focusSoon($('dOdo'));
+    });
+  });
+}
+function readOdo(input, errId, minOdo){
+  const v = input.value.trim();
+  const odo = Number(v);
+  if (v === '' || !Number.isFinite(odo) || odo < 0) { showErr(errId, 'Введите одометр цифрами.'); return null; }
+  if (minOdo != null && odo < minOdo) { showErr(errId, 'Одометр меньше предыдущего (' + Number(minOdo).toLocaleString('en-US') + '). Проверьте цифру.'); return null; }
+  showErr(errId, '');
+  return odo;
+}
+function pushEvent(trip, ev){ ev.id = uid(); ev.ts = Date.now(); trip.events.push(ev); return ev; }
+function geoOf(formName){ const g = geoCache[formName]; return { lat: g ? g.lat : null, lon: g ? g.lon : null, label: g ? (g.label || '') : '' }; }
+
+/* --- СТАРТ --- */
+function confirmStart(){
+  const odo = readOdo($('sOdo'), 'sErr', null); if (odo === null) return;
+  if (app.current) { toast('Рейс уже идёт'); return; }
+  const g = geoOf('start');
+  const trip = blankTrip();
+  trip.startedAt = Date.now(); trip.startOdo = odo; trip.startFuel = Number($('sFuel').value);
+  pushEvent(trip, { type: 'start', odo, lat: g.lat, lon: g.lon, label: g.label });
+  app.current = trip; persist(); sbSyncSoon(); closeSheet(); render(); toast('Рейс начат');
+}
+/* --- ПИКАП (с автостартом, если рейса нет) --- */
+function confirmPickup(){
+  const name = $('pCar').value.trim();
+  if (!name) { showErr('pErr', 'Введите название машины.'); return; }
+  const priceRaw = $('pPrice').value.trim();
+  const price = Number(priceRaw);
+  if (priceRaw === '' || !Number.isFinite(price) || price < 0) { showErr('pErr', 'Введите ставку за машину, $.'); return; }
+  let trip = app.current;
+  const odo = readOdo($('pOdo'), 'pErr', trip ? trip.startOdo : null); if (odo === null) return;
+  const g = geoOf('pickup');
+  const label = g.label;
+  if (!trip) {
+    // Автостарт: рейс создаётся этим же одометром — пикап не теряется.
+    trip = blankTrip();
+    trip.startedAt = Date.now(); trip.startOdo = odo; trip.startFuel = Number($('pFuel').value);
+    pushEvent(trip, { type: 'start', odo, lat: g.lat, lon: g.lon, label });
+    app.current = trip;
+  }
+  const car = { id: uid(), name, rate: price, pickupOdo: odo, pickupLabel: label, pickupLat: g.lat, pickupLon: g.lon, dropOdo: null, dropLabel: null, dropLat: null, dropLon: null, status: 'onboard' };
+  trip.cars.push(car);
+  pushEvent(trip, { type: 'pickup', odo, lat: g.lat, lon: g.lon, label, carId: car.id });
+  persist(); sbSyncSoon(); closeSheet(); render();
+  $('pCar').value = ''; $('pPrice').value = '';
+  toast('Машина добавлена: ' + name);
+}
+/* --- ВЫГРУЗКА --- */
+function confirmDrop(){
+  const trip = app.current; if (!trip) { toast('Сначала начните рейс'); return; }
+  const car = trip.cars.find(c => c.id === selectedDropCarId && c.status === 'onboard');
+  if (!car) { showErr('dErr', 'Выберите машину из списка выше.'); return; }
+  const odo = readOdo($('dOdo'), 'dErr', car.pickupOdo); if (odo === null) return;
+  const g = geoOf('drop');
+  const label = g.label;
+  car.dropOdo = odo; car.dropLabel = label; car.dropLat = g.lat; car.dropLon = g.lon; car.status = 'delivered';
+  pushEvent(trip, { type: 'drop', odo, lat: g.lat, lon: g.lon, label, carId: car.id });
+  persist(); sbSyncSoon(); closeSheet(); render(); toast('Выгружено: ' + car.name);
+}
+/* --- ЗАПРАВКА --- */
+function confirmFuel(){
+  const trip = app.current; if (!trip) { toast('Сначала начните рейс'); return; }
+  const costRaw = $('fCost').value.trim();
+  const cost = Number(costRaw);
+  if (costRaw === '' || !Number.isFinite(cost) || cost <= 0) { showErr('fErr', 'Введите сумму заправки, $.'); return; }
+  const galRaw = $('fGal').value.trim();
+  const gallons = galRaw === '' ? null : Number(galRaw);
+  if (gallons !== null && (!Number.isFinite(gallons) || gallons < 0)) { showErr('fErr', 'Галлоны — цифрами или оставьте пустым.'); return; }
+  const odo = readOdo($('fOdo'), 'fErr', trip.startOdo); if (odo === null) return;
+  const g = geoOf('fuel');
+  pushEvent(trip, { type: 'fuel', odo, lat: g.lat, lon: g.lon, label: g.label, amount: cost, gallons });
+  persist(); sbSyncSoon(); closeSheet(); render();
+  $('fCost').value = ''; $('fGal').value = '';
+  toast('Заправка записана: ' + money(cost));
+}
+/* --- ФИНИШ ---
+   Надёжность: обработчик навешан напрямую через addEventListener,
+   геолокация НЕ ожидается внутри финиша (снимается при открытии формы),
+   prompt() не используется. Финиш сработает даже полностью офлайн. */
+function confirmFinish(){
+  const trip = app.current; if (!trip) { toast('Нет активного рейса'); return; }
+  const odo = readOdo($('finOdo'), 'finErr', trip.startOdo); if (odo === null) return;
+  const g = geoOf('finish');
+  trip.endOdo = odo; trip.endFuel = Number($('finFuel').value); trip.finishedAt = Date.now();
+  pushEvent(trip, { type: 'finish', odo, lat: g.lat, lon: g.lon, label: g.label });
+  const archived = JSON.parse(JSON.stringify(trip));
+  app.trips.unshift(archived);
+  if (app.trips.length > 100) app.trips = app.trips.slice(0, 100);
+  app.current = null;
+  persist(); sbSyncSoon(); closeSheet(); render(); renderHistory(); renderDashboard();
+  toast('🏁 Рейс завершён и сохранён в историю');
+  showView('history');
+}
+
+/* ---------------- Views / navigation ---------------- */
+function showView(which){
+  $('mainView').classList.toggle('open', which === 'main');
+  $('dashView').classList.toggle('open', which === 'dash');
+  $('historyView').classList.toggle('open', which === 'history');
+  $('detailView').classList.toggle('open', which === 'detail');
+  $('navMain').classList.toggle('active', which === 'main');
+  $('navDash').classList.toggle('active', which === 'dash');
+  $('navHistory').classList.toggle('active', which === 'history' || which === 'detail');
+  if (which === 'history') renderHistory();
+  if (which === 'dash') renderDashboard();
+  window.scrollTo(0, 0);
+}
+
+/* ---------------- Init ---------------- */
+function init(){
+  fillFuelSelect($('sFuel'), 75);
+  fillFuelSelect($('pFuel'), 75);
+  fillFuelSelect($('finFuel'), 50);
+  $('btnStart').addEventListener('click', () => openSheet('start'));
+  $('btnPickup').addEventListener('click', () => openSheet('pickup'));
+  $('btnDrop').addEventListener('click', () => { if (!app.current) { toast('Сначала начните рейс — или нажмите PICKUP'); return; } openSheet('drop'); });
+  $('btnFuel').addEventListener('click', () => { if (!app.current) { toast('Сначала начните рейс'); return; } openSheet('fuel'); });
+  $('btnFinish').addEventListener('click', () => { if (!app.current) { toast('Нет активного рейса'); return; } openSheet('finish'); });
+  $('sheetX').addEventListener('click', closeSheet);
+  $('sheetOverlay').addEventListener('click', e => { if (e.target === $('sheetOverlay')) closeSheet(); });
+  document.querySelectorAll('.sheet-cancel').forEach(b => b.addEventListener('click', closeSheet));
+  $('dBack').addEventListener('click', () => { selectedDropCarId = null; $('dFields').style.display = 'none'; $('dList').style.display = 'block'; $('dCancelList').style.display = 'block'; renderDropList(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+  $('sConfirm').addEventListener('click', confirmStart);
+  $('pConfirm').addEventListener('click', confirmPickup);
+  $('dConfirm').addEventListener('click', confirmDrop);
+  $('fConfirm').addEventListener('click', confirmFuel);
+  $('finConfirm').addEventListener('click', confirmFinish);
+  $('navMain').addEventListener('click', () => showView('main'));
+  $('navDash').addEventListener('click', () => showView('dash'));
+  $('navHistory').addEventListener('click', () => showView('history'));
+  $('detailBack').addEventListener('click', () => showView('history'));
+  $('dashPrev').addEventListener('click', () => { dashSelMs = addDays(dashSelectedStart(), -7).getTime(); renderDashboard(); });
+  $('dashNext').addEventListener('click', () => { dashSelMs = addDays(dashSelectedStart(), 7).getTime(); renderDashboard(); });
+  $('dashModeMon').addEventListener('click', () => setWeekStartMode('mon'));
+  $('dashModeSun').addEventListener('click', () => setWeekStartMode('sun'));
+  $('btnExport').addEventListener('click', exportData);
+  $('btnImport').addEventListener('click', () => $('importFile').click());
+  $('importFile').addEventListener('change', e => { importDataFromFile(e.target.files && e.target.files[0]); e.target.value = ''; });
+  render();
+  if (sbEnabled()) {
+    setSyncLine('Supabase: загрузка…');
+    sbLoadOnStart().catch(() => setSyncLine('Supabase: нет связи, данные на устройстве'));
+  }
+}
+function setWeekStartMode(mode){
+  if (dashMode() === mode) { renderDashboard(); return; }
+  app.settings = Object.assign({ weekStart: 'mon' }, app.settings || {});
+  app.settings.weekStart = mode;
+  persist();
+  // Выбранную неделю пересчитываем под новый режим по её первому дню
+  if (dashSelMs != null) dashSelMs = weekStartOf(new Date(dashSelMs), mode).getTime();
+  renderDashboard();
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 </script>
 </body>
 </html>
