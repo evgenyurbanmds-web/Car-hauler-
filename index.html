@@ -86,6 +86,9 @@
     .meta{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5}
     .price{font-weight:800;white-space:nowrap}
     .permi{font-size:12px;color:var(--lime);font-weight:700;white-space:nowrap}
+    .pm-good{color:var(--lime)}.pm-mid{color:var(--amber)}.pm-bad{color:var(--red)}
+    .metric .per.pm-mid{color:var(--amber)}.metric .per.pm-bad{color:var(--red)}
+    .permi.pm-mid{color:var(--amber)}.permi.pm-bad{color:var(--red)}
     .dropbtn{width:auto;padding:13px 16px;font-size:15px;flex:0 0 auto}
     .empty{font-size:13px;color:var(--muted);padding:8px 0;line-height:1.5}
     .view{display:none}.view.open{display:block}
@@ -425,6 +428,7 @@ const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp
 const num = v => { const n = Number(v); return Number.isFinite(n) ? n : 0; };
 function money(n){ return '$' + Number(n || 0).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2}); }
 function moneyMi(n){ return '$' + Number(n || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+function pmCls(v, scale){ if (v == null || !isFinite(v)) return ''; var hi = scale === 'trip' ? 2 : 1.5, lo = scale === 'trip' ? 1.5 : 1; return v >= hi ? 'pm-good' : (v >= lo ? 'pm-mid' : 'pm-bad'); }
 function fmtDate(ts){ try { return new Date(ts).toLocaleString('ru-RU', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'}); } catch (_) { return ''; } }
 
 const FUEL_LEVELS = [
@@ -722,7 +726,7 @@ function carHtml(car){
     '<div class="name">' + esc(car.name) + '</div>' +
     '<div class="meta">' + route + '<br>' + odoLine + '</div></div>' +
     '<div><div class="price">' + money(car.rate) + '</div>' +
-    (pm != null ? '<div class="permi">' + moneyMi(pm) + ' / миля</div>' : '') + '</div><div class="evhint">✎</div></div>';
+    (pm != null ? '<div class="permi ' + pmCls(pm, 'low') + '">' + moneyMi(pm) + ' / миля</div>' : '') + '</div><div class="evhint">✎</div></div>';
 }
 function tripRouteText(t){
   const fp = t.events.find(e => e.type === 'pickup');
@@ -750,6 +754,7 @@ function render(){
     $('lastLoc').textContent = '';
   }
   $('mGrossHero').textContent = moneyMi(m.revenueMi);
+  $('mGrossHero').className = 'hero-num' + (m.miles > 0 ? ' ' + pmCls(m.revenueMi, 'trip') : '');
   $('mHeroSub').textContent = 'всего ' + money(m.revenue) + ' · после топлива ' + moneyMi(m.profitMi) + '/миля';
   const loadedMi = Math.max(0, m.miles - m.emptyMiles);
   $('mbLoaded').style.width = m.miles > 0 ? (loadedMi / m.miles * 100) + '%' : '0%';
@@ -762,6 +767,7 @@ function render(){
   $('mProfit').textContent = money(m.profit);
   $('mProfit').className = m.profit < 0 ? 'bad' : '';
   $('mProfitMi').textContent = moneyMi(m.profitMi) + ' / миля';
+  $('mProfitMi').className = 'per' + (m.miles > 0 ? ' ' + pmCls(m.profitMi, 'low') : '');
   $('mMiles').textContent = Math.round(m.miles).toLocaleString('en-US');
   $('mEmpty').textContent = Math.round(m.emptyMiles).toLocaleString('en-US');
   $('mEmptyPct').textContent = m.miles > 0 ? Math.round(m.emptyMiles / m.miles * 100) + '% от рейса' : ' ';
@@ -802,7 +808,7 @@ function tripCardHtml(t, clickable){
     '<div class="trip-stat"><span>Выручка</span><strong>' + money(m.revenue) + '</strong></div>' +
     '<div class="trip-stat"><span>Топливо</span><strong>' + money(m.fuelCost) + '</strong></div>' +
     '<div class="trip-stat"><span>После топлива</span><strong class="' + (m.profit >= 0 ? 'good' : 'bad') + '">' + money(m.profit) + '</strong></div>' +
-    '<div class="trip-stat"><span>$/миля</span><strong>' + moneyMi(m.revenueMi) + '</strong></div>' +
+    '<div class="trip-stat"><span>$/миля</span><strong class="' + pmCls(m.revenueMi, 'trip') + '">' + moneyMi(m.revenueMi) + '</strong></div>' +
     '</div>' +
     '<div class="meta" style="margin-top:9px">Машин: ' + t.cars.length + ' · ' + t.cars.map(c => esc(c.name)).join(', ') + '</div></div>';
 }
@@ -946,6 +952,7 @@ function renderDashboard(){
   $('dashWeekLabel').textContent = weekLabel(sel);
   $('dashWeekSub').textContent = agg.trips.length ? 'рейсов: ' + agg.trips.length : 'нет завершённых рейсов';
   $('dGross').textContent = moneyMi(agg.grossMi);
+  $('dGross').className = 'hero-num' + (agg.miles > 0 ? ' ' + pmCls(agg.grossMi, 'trip') : '');
   $('dGrossSub').textContent = 'выручка ' + money(agg.revenue) + ' · ' + Math.round(agg.miles).toLocaleString('en-US') + ' миль';
   $('dRev').textContent = money(agg.revenue);
   $('dMiles').textContent = Math.round(agg.miles).toLocaleString('en-US');
@@ -954,6 +961,7 @@ function renderDashboard(){
   $('dProfit').textContent = money(agg.profit);
   $('dProfit').className = agg.profit < 0 ? 'bad' : '';
   $('dProfitMi').textContent = moneyMi(agg.profitMi) + ' / миля';
+  $('dProfitMi').className = 'per' + (agg.miles > 0 ? ' ' + pmCls(agg.profitMi, 'low') : '');
   $('dEmpty').textContent = Math.round(agg.emptyMiles).toLocaleString('en-US');
   $('dEmptyPct').textContent = agg.miles > 0 ? Math.round(agg.emptyMiles / agg.miles * 100) + '% от недели' : ' ';
   $('dTrips').textContent = agg.trips.length + ' · ' + agg.cars;
@@ -990,7 +998,7 @@ function renderDashboard(){
     const g = aggregateWeek(wsMs, mode);
     const tripsSorted = groups[wsMs].slice().sort((a, b) => b.startedAt - a.startedAt);
     return '<div class="weekhead"><div class="wt">' + weekLabel(new Date(wsMs)) + '</div>' +
-      '<div class="wv">итого <b>' + money(g.revenue) + '</b> · грязная <b>' + moneyMi(g.grossMi) + '</b></div></div>' +
+      '<div class="wv">итого <b>' + money(g.revenue) + '</b> · грязная <b class="' + pmCls(g.grossMi, 'trip') + '">' + moneyMi(g.grossMi) + '</b></div></div>' +
       tripsSorted.map(t => tripCardHtml(t, true)).join('');
   }).join('') : '<div class="empty">Завершённых рейсов пока нет</div>';
   bindTripCards($('dHistory'));
@@ -1010,9 +1018,9 @@ function openTripDetail(id){
     '<div class="grid">' +
     '<div class="metric"><span>Мили</span><strong>' + Math.round(m.miles) + '</strong><div class="per">&nbsp;</div></div>' +
     '<div class="metric"><span>Пустые мили</span><strong>' + Math.round(m.emptyMiles) + '</strong><div class="per amber">' + (m.miles > 0 ? Math.round(m.emptyMiles / m.miles * 100) + '% от рейса' : '&nbsp;') + '</div></div>' +
-    '<div class="metric"><span>Выручка</span><strong>' + money(m.revenue) + '</strong><div class="per">' + moneyMi(m.revenueMi) + ' / миля</div></div>' +
+    '<div class="metric"><span>Выручка</span><strong>' + money(m.revenue) + '</strong><div class="per ' + pmCls(m.revenueMi, 'trip') + '">' + moneyMi(m.revenueMi) + ' / миля</div></div>' +
     '<div class="metric"><span>Топливо</span><strong>' + money(m.fuelCost) + '</strong><div class="per amber">' + moneyMi(m.fuelMi) + ' / миля</div></div>' +
-    '<div class="metric"><span>После топлива</span><strong class="' + (m.profit >= 0 ? 'good' : 'bad') + '">' + money(m.profit) + '</strong><div class="per">' + moneyMi(m.profitMi) + ' / миля</div></div>' +
+    '<div class="metric"><span>После топлива</span><strong class="' + (m.profit >= 0 ? 'good' : 'bad') + '">' + money(m.profit) + '</strong><div class="per ' + pmCls(m.profitMi, 'low') + '">' + moneyMi(m.profitMi) + ' / миля</div></div>' +
     '<div class="metric"><span>Машин</span><strong>' + t.cars.length + '</strong><div class="per">&nbsp;</div></div>' +
     '</div></div>' +
     '<div class="card"><h2>Машины</h2>' +
