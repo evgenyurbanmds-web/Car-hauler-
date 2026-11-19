@@ -428,7 +428,7 @@ const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp
 const num = v => { const n = Number(v); return Number.isFinite(n) ? n : 0; };
 function money(n){ return '$' + Number(n || 0).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2}); }
 function moneyMi(n){ return '$' + Number(n || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
-function pmCls(v, scale){ if (v == null || !isFinite(v)) return ''; var hi = scale === 'trip' ? 2 : 1.5, lo = scale === 'trip' ? 1.5 : 1; return v >= hi ? 'pm-good' : (v >= lo ? 'pm-mid' : 'pm-bad'); }
+function pmCls(v, scale){ if (v == null || !isFinite(v)) return ''; if (scale === 'trip') return v > 2.2 ? 'pm-good' : (v >= 1.5 ? 'pm-mid' : 'pm-bad'); return v >= 1.5 ? 'pm-good' : (v >= 1 ? 'pm-mid' : 'pm-bad'); }
 function fmtDate(ts){ try { return new Date(ts).toLocaleString('ru-RU', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'}); } catch (_) { return ''; } }
 
 const FUEL_LEVELS = [
